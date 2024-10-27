@@ -1,0 +1,31 @@
+/* Estilo para el contenedor central de perfil */
+.profile-container {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  /* Imagen de perfil */
+  .profile-image {
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+  }
+  
+  /* Nombre en negrita */
+  .profile-name {
+    font-weight: bold;
+    margin: 10px 0 0;
+  }
+  
+  /* Estilo del elemento de la descripción */
+  .description-label {
+    font-weight: bold;
+  }
+  
+  /* Contador de caracteres de la descripción */
+  .description-counter {
+    text-align: right;
+    font-size: 12px;
+    padding-right: 10px;
+  }
+  

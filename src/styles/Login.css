@@ -1,0 +1,95 @@
+/* Login.css */
+.login-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centra verticalmente */
+    align-items: center; /* Centra horizontalmente */
+    --background: linear-gradient(to bottom, #DC2527, #FF5860);
+    padding: 20px;
+    height: 100vh; /* Llenar la altura completa del viewport */
+    position: relative; /* Para la posición absoluta de los logos */
+}
+
+  .background-logo {
+    position: absolute; /* Positioned behind other elements */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Centering */
+    width: 300px; /* Adjust size as needed */
+    height: 300px; /* Adjust size as needed */
+    opacity: 0.2; /* Optional transparency */
+  }
+  
+  .background-logo-sad {
+    position: static; /* Positioned behind other elements */
+    top: 1%; /* Adjust for your layout */
+    width: 300px; /* Adjust size as needed */
+    height: 300px; /* Adjust size as needed */
+    
+  }
+  
+  .input {
+    width: 90%;
+    height: 50px;
+    background-color: #FFFFFF;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 0 auto 10px auto; /* Centro horizontalmente con margen automático */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+  .error-text {
+    color: #007BFF;
+    margin-bottom: 10px;
+    display: grid; /* Habilita Grid */
+    place-items: center; /* Centra horizontal y verticalmente */
+    width: 100%; /* Asegúrate de que ocupe todo el ancho del contenedor */
+  }
+  
+  .terms-text {
+    color: #FFFFFF;
+    font-size: 12px;
+    text-align: center;
+    margin: 10px 0;
+    padding-left: 50px;
+    padding-right: 50px;
+  }
+  
+  .login-button {
+
+    padding: 1px 25px;
+    border-radius: 15px;
+    margin: 25px 0 20px;
+    width: 100%;
+    --background: #19436E;
+  }
+  
+  .login-button .ion-btn-text {
+    color: #FFFFFF;
+    font-size: 13px;
+    font-weight: bolder;
+    text-align: center;
+  }
+  
+  .button-container {
+    display: flex; /* Flexbox para disposición horizontal */
+    justify-content: center; /* Centra los botones horizontalmente */
+    width: 50%; /* Ajusta según sea necesario */
+    margin: 20px auto; /* Usa auto para centrar el contenedor en el padre */
+  }
+  
+  .icon-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+  }
+  
+  .forgot-password-text {
+    color: #FFFFFF;
+    font-size: 14px;
+    margin-top: 5px;
+    text-align: center;
+    margin-bottom: 100px;
+  }
+  

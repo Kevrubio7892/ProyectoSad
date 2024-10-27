@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton, IonContent, IonList, IonItem, IonLabel, IonToggle } from '@ionic/react';
-import './NotiSettings.css'
+
 
 const NotificationsSettings = () => {
   const [allowNotifications, setAllowNotifications] = useState(true);

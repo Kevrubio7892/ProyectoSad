@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton, IonContent, IonList, IonItem, IonLabel, IonTextarea, IonIcon } from '@ionic/react';
 import { personCircle, notifications, lockClosed, logoInstagram, card, logOut, refresh } from 'ionicons/icons';
 import { useHistory } from 'react-router';
+import '../styles/Opciones.css';
 
 const SettingsPage = () => {
   const [description, setDescription] = useState('');
@@ -20,19 +21,19 @@ const SettingsPage = () => {
       </IonHeader>
 
       <IonContent>
-        <div style={{ textAlign: 'center', padding: '20px' }}>
+        <div className="profile-container">
           <img
             src="https://image.europafm.com/clipping/cmsimages01/2022/09/28/2FAC71CF-4762-49D3-AA69-B1154B85D5D1/maria-becerra_104.jpg?crop=2457,2457,x476,y0&width=1200&height=1200&optimize=low&format=webply"
             alt="Profile"
-            style={{ borderRadius: '50%', width: '100px', height: '100px' }}
+            className="profile-image"
           />
-          <h2 style={{ fontWeight: 'bold', margin: '10px 0 0' }}>Jenny Nails</h2>
+          <h2 className="profile-name">Jenny Nails</h2>
           <p>Técnico Veterinario</p>
         </div>
 
         <IonList>
           <IonItem lines="none">
-            <IonLabel style={{ fontWeight: 'bold' }}>Descripción</IonLabel>
+            <IonLabel className="description-label">Descripción</IonLabel>
           </IonItem>
           <IonItem>
             <IonTextarea
@@ -42,7 +43,7 @@ const SettingsPage = () => {
               onIonChange={(e) => setDescription(e.target.value || '')}
             ></IonTextarea>
           </IonItem>
-          <IonItem lines="none" style={{ textAlign: 'right', fontSize: '12px', paddingRight: '10px' }}>
+          <IonItem lines="none" className="description-counter">
             {description.length}/{maxDescriptionLength} 
           </IonItem>
         </IonList>
