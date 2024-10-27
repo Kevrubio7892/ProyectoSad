@@ -62,23 +62,30 @@ const Login: React.FC = () => {
         </div>
         
         {/* Formulario de correo */}
+        <IonInput label="Solid input" labelPlacement="floating" fill="solid" placeholder="Enter text"></IonInput>
         <IonInput
           className="input"
-          placeholder="Correo electrónico"
+          label="Correo electrónico"
+          fill="solid"
+          labelPlacement="floating"
+          placeholder="Ingresa tu correo"
           value={email}
           onIonChange={(e) => setEmail(e.detail.value!)}
-          color="light"
+          color="medium"
         />
         {emailError && <IonText color="danger" className="error-text">{emailError}</IonText>}
 
         {/* Formulario de contraseña */}
         <IonInput
           className="input"
+          label="Contraseña"
+          fill="solid"
+          labelPlacement="floating"
           type="password"
-          placeholder="Contraseña"
+          placeholder="Ingresa tu contraseña"
           value={password}
           onIonChange={(e) => setPassword(e.detail.value!)}
-          color="light"
+          color="medium"
         />
         {passwordError && <IonText color="danger" className="error-text">{passwordError}</IonText>}
 

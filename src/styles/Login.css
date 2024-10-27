@@ -25,7 +25,7 @@
     top: 1%; /* Adjust for your layout */
     width: 300px; /* Adjust size as needed */
     height: 300px; /* Adjust size as needed */
-    
+    margin: auto;
   }
   
   .input {
@@ -39,7 +39,7 @@
 }
 
   .error-text {
-    color: #007BFF;
+    color: #ffffff;
     margin-bottom: 10px;
     display: grid; /* Habilita Grid */
     place-items: center; /* Centra horizontal y verticalmente */
@@ -56,13 +56,16 @@
   }
   
   .login-button {
-
-    padding: 1px 25px;
-    border-radius: 15px;
+    padding: 10px 30px; /* Aumenta el padding superior e inferior */
+    --border-radius: 10px;
     margin: 25px 0 20px;
     width: 100%;
     --background: #19436E;
-  }
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 18px; /* Aumenta el tamaño de la fuente */
+    --padding-top: 15px;
+    --padding-bottom: 15px;
+}
   
   .login-button .ion-btn-text {
     color: #FFFFFF;
