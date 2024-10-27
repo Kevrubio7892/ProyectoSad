@@ -1,0 +1,7 @@
+{
+  "name": "sad",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}
