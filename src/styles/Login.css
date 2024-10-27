@@ -58,13 +58,13 @@
   .login-button {
     padding: 10px 30px; /* Aumenta el padding superior e inferior */
     --border-radius: 10px;
-    margin: 25px 0 20px;
+    margin: 10px 0 px;
     width: 100%;
     --background: #19436E;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-size: 18px; /* Aumenta el tamaño de la fuente */
-    --padding-top: 15px;
-    --padding-bottom: 15px;
+    --padding-top: 20px;
+    --padding-bottom: 20px;
 }
   
   .login-button .ion-btn-text {
@@ -85,7 +85,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 10px;
+    padding: 1px;
   }
   
   .forgot-password-text {
