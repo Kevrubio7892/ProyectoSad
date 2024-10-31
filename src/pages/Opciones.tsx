@@ -57,7 +57,7 @@ const SettingsPage = () => {
             <IonIcon slot="start" icon={notifications} />
             <IonLabel>Notificaciones</IonLabel>
           </IonItem>
-          <IonItem button>
+          <IonItem button onClick={() => history.push('/privacidad')}>
             <IonIcon slot="start" icon={lockClosed} />
             <IonLabel>Privacidad de la cuenta</IonLabel>
           </IonItem>

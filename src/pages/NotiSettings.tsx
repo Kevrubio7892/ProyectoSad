@@ -1,11 +1,45 @@
-import React, { useState } from 'react';
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton, IonContent, IonList, IonItem, IonLabel, IonToggle } from '@ionic/react';
-
+import React, { useEffect, useState } from 'react';
+import {
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonButtons,
+  IonBackButton,
+  IonContent,
+  IonList,
+  IonItem,
+  IonLabel,
+  IonToggle,
+  IonIcon
+} from '@ionic/react';
+import { notificationsOutline, chatbubblesOutline, peopleOutline } from 'ionicons/icons'; // Importa los íconos
+import '../styles/NotiSettings.css';
 
 const NotificationsSettings = () => {
-  const [allowNotifications, setAllowNotifications] = useState(true);
-  const [onlyMessages, setOnlyMessages] = useState(true);
-  const [onlyMatches, setOnlyMatches] = useState(true);
+  // Función para recuperar el estado desde el Local Storage
+  const getInitialToggleState = (key: string, defaultValue: boolean) => {
+    const savedState = localStorage.getItem(key);
+    return savedState !== null ? JSON.parse(savedState) : defaultValue;
+  };
+
+  // Estado de los toggles
+  const [allowNotifications, setAllowNotifications] = useState(() => getInitialToggleState('allowNotifications', true));
+  const [onlyMessages, setOnlyMessages] = useState(() => getInitialToggleState('onlyMessages', true));
+  const [onlyMatches, setOnlyMatches] = useState(() => getInitialToggleState('onlyMatches', true));
+
+  // Efecto para guardar el estado en el Local Storage
+  useEffect(() => {
+    localStorage.setItem('allowNotifications', JSON.stringify(allowNotifications));
+  }, [allowNotifications]);
+
+  useEffect(() => {
+    localStorage.setItem('onlyMessages', JSON.stringify(onlyMessages));
+  }, [onlyMessages]);
+
+  useEffect(() => {
+    localStorage.setItem('onlyMatches', JSON.stringify(onlyMatches));
+  }, [onlyMatches]);
 
   return (
     <IonPage>
@@ -20,22 +54,37 @@ const NotificationsSettings = () => {
 
       <IonContent>
         <IonList>
-          <IonItem lines="full">
-            <IonLabel className="ion-text-center" style={{ fontWeight: 'bold' }}>
+          <IonItem lines="full" className="notification-item">
+            <IonLabel className="config-tittle-label">
               Configura tus notificaciones
             </IonLabel>
           </IonItem>
-          <IonItem lines="full">
-            <IonLabel>Permitir notificaciones</IonLabel>
-            <IonToggle checked={allowNotifications} onIonChange={(e) => setAllowNotifications(e.detail.checked)} />
+          <IonItem lines="full" className="notification-item">
+            <IonIcon icon={notificationsOutline} slot="start" /> {/* Icono para permitir notificaciones */}
+            <IonLabel className="notification-label">Permitir notificaciones</IonLabel>
+            <IonToggle
+              checked={allowNotifications}
+              onIonChange={(e) => setAllowNotifications(e.detail.checked)}
+              slot="end"
+            />
           </IonItem>
-          <IonItem>
-            <IonLabel>Solo mensajes</IonLabel>
-            <IonToggle checked={onlyMessages} onIonChange={(e) => setOnlyMessages(e.detail.checked)} />
+          <IonItem className="notification-item">
+            <IonIcon icon={chatbubblesOutline} slot="start" /> {/* Icono para solo mensajes */}
+            <IonLabel className="notification-label">Solo mensajes</IonLabel>
+            <IonToggle
+              checked={onlyMessages}
+              onIonChange={(e) => setOnlyMessages(e.detail.checked)}
+              slot="end"
+            />
           </IonItem>
-          <IonItem>
-            <IonLabel>Solo coincidencias</IonLabel>
-            <IonToggle checked={onlyMatches} onIonChange={(e) => setOnlyMatches(e.detail.checked)} />
+          <IonItem className="notification-item">
+            <IonIcon icon={peopleOutline} slot="start" /> {/* Icono para solo coincidencias */}
+            <IonLabel className="notification-label">Solo coincidencias</IonLabel>
+            <IonToggle
+              checked={onlyMatches}
+              onIonChange={(e) => setOnlyMatches(e.detail.checked)}
+              slot="end"
+            />
           </IonItem>
         </IonList>
       </IonContent>

@@ -7,9 +7,9 @@ import imageLeia from '../assets/leia.jpg';
 import imageBambi from '../assets/bambi.jpg';
 import LikeAnimation from '../components/LikeAnimation'; // Importa el componente de animación de like
 import CheckAnimation from '../components/CheckAnimation'; // Importa el componente de animación de check
-import { useHistory } from 'react-router-dom';
+import XAnimation from '../components/XAnimation'; 
+import { useHistory } from 'react-router-dom'; // Importa useHistory
 import '../styles/Tarjetas.css';
-
 
 interface CardData {
   id: number;
@@ -20,17 +20,28 @@ interface CardData {
 
 const data: CardData[] = [
   { id: 1, name: 'José Manuel 22', details: ['Ingeniería Civil', 'Deportes', 'Conocer personas'], image: imageLeia },
-  { id: 2, name: 'María 20', details: ['Diseño Gráfico', 'Arte', 'Fotografía'], image: imageBambi },
+  { id: 2, name: 'Bambyman', details: ['Técnico en sonido', 'Audiovisual', 'Weno pal lol'], image: imageBambi },
 ];
 
 const CardView: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [showXAnimation, setShowXAnimation] = useState(false); // Estado para la animación de X
   const [showLikeAnimation, setShowLikeAnimation] = useState(false); // Estado para la animación de like
   const [showCheckAnimation, setShowCheckAnimation] = useState(false); // Estado para la animación de check
+  
   const cardRef = useRef<HTMLDivElement | null>(null);
+  const history = useHistory(); // Inicializa useHistory
+
+  const handleSettingsClick = () => {
+    history.push('/opciones'); // Redirige a la página de perfil
+  };
 
   const handleSwipe = (direction: number) => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % data.length);
+  };
+
+  const handleXClick = () => {
+    setShowXAnimation(true); // Mostrar la animación al hacer clic en el X
   };
 
   const handleLikeClick = () => {
@@ -39,6 +50,10 @@ const CardView: React.FC = () => {
 
   const handleCheckClick = () => {
     setShowCheckAnimation(true); // Mostrar la animación al hacer clic en el check
+  };
+
+  const handleXAnimationComplete = () => {
+    setShowXAnimation(false); // Ocultar la animación de X al completarse
   };
 
   const handleLikeAnimationComplete = () => {
@@ -97,8 +112,8 @@ const CardView: React.FC = () => {
     <IonPage className="content">
       <IonHeader className="header">
         <IonButtons slot="start">
-          <IonButton color="light">
-            <IonIcon icon={settingsOutline} size="large"/>
+          <IonButton color="light" onClick={handleSettingsClick}> {/* Asocia el evento */}
+            <IonIcon icon={settingsOutline} size="large" />
           </IonButton>
         </IonButtons>
         <img src={logo_SAD} alt="Logo SAD" className="logo" />
@@ -121,7 +136,7 @@ const CardView: React.FC = () => {
           </div>
         )}
         <div className="button-container">
-          <IonButton className="icon-button-x" fill="clear" color="light">
+          <IonButton className="icon-button-x" fill="clear" color="light" onClick={handleXClick}>
             <IonIcon icon={close} size="large" />
           </IonButton>
           <IonButton className="icon-button-check" fill="clear" color="light" onClick={() => { handleSwipe(1); handleCheckClick(); }}>
@@ -131,6 +146,7 @@ const CardView: React.FC = () => {
             <IonIcon icon={heart} size="large" />
           </IonButton>
         </div>
+        {showXAnimation && <XAnimation onComplete={handleXAnimationComplete} />} {/* Mostrar animación de X */}
         {showLikeAnimation && <LikeAnimation onComplete={handleLikeAnimationComplete} />} {/* Mostrar animación de like */}
         {showCheckAnimation && <CheckAnimation onComplete={handleCheckAnimationComplete} />} {/* Mostrar animación de check */}
       </IonContent>

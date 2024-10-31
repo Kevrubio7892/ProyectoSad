@@ -1,0 +1,25 @@
+/* LikeAnimation.css */
+.x-animation {
+    position: absolute;
+    font-size: 200px; /* Tamaño del corazón */
+    animation: scale 1s ease-out;
+    top: 40%; /* Ajusta la posición vertical */
+    left: 50%; /* Centrado horizontal */
+    transform: translate(-50%, -50%);
+  }
+  
+  @keyframes scale {
+    0% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: translate(-50%, -50%) scale(1.5);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(0);
+      opacity: 0;
+    }
+  }
+  
