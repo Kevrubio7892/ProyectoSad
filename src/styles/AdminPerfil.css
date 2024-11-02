@@ -1,0 +1,37 @@
+/* Estilo para el contenedor central de perfil */
+.nav-container{
+  text-align: center;
+}
+.profile-contain {
+    text-align: center;
+    padding: 20px;
+    color: white; /* Texto en blanco */
+  }
+  
+  /* Imagen de perfil */
+  .profile-image {
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    background-color: white;
+  }
+  
+  /* Icono de cámara para editar foto */
+  .camera-icon {
+    font-size: 24px;
+    color: white;
+    position: absolute;
+    right: calc(50% - 12px); /* Centrado horizontalmente debajo de la foto */
+    margin-top: -20px;
+  }
+  
+  /* Elementos de información personal */
+  .personal-info-item {
+    margin: 10px 20px;
+  }
+  
+  /* Estilo de los textos dentro de los elementos */
+  IonLabel, IonInput {
+    color: white;
+  }
+  
