@@ -1,0 +1,127 @@
+
+.content{
+
+--background: linear-gradient(to bottom, #DC2527, #19436E);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  position: static;
+  background: linear-gradient(to bottom, #DC2527, #FF5860);
+  margin-bottom: 50px;
+}
+
+.logo {
+  width: 120px;
+  height: auto;
+  position: absolute; /* Asegura que el logo esté en el centro */
+  left: 50%;
+  transform: translateX(-50%);
+  
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.card {
+  width: 90%;
+  height: 85%;
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+  margin: auto;
+}
+
+.card-image {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  object-fit: fill;
+  object-position: center;
+}
+
+.info-container {
+  padding: 20px;
+  background-color: transparent;
+  width: 100%;
+  position: absolute;
+  bottom: 20px;
+}
+
+.name-text {
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 5px;
+}
+
+.detail-text {
+  font-size: 16px;
+  color: white;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-around;
+  width: 80%;
+  padding-top: 25px;
+}
+
+.icon-button-x,
+.icon-button-check,
+.icon-button-heart {
+  width: 70px;  /* Ancho del botón */
+  height: 70px; /* Altura del botón */
+  border-radius: 50%; /* Asegura que sea redondo */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none; /* Elimina cualquier borde */
+  outline: none; /* Elimina el contorno en algunos navegadores */
+  cursor: pointer; /* Cambia el cursor al pasar el mouse sobre el botón */
+}
+
+/* Botón X */
+.icon-button-x {
+  background: linear-gradient(to right, #eb1b0c, #FF7E75);
+}
+
+/* Botón Check */
+.icon-button-check {
+  background: linear-gradient(to right, #28A745, #80e295);
+}
+
+/* Botón Corazón */
+.icon-button-heart {
+  background: linear-gradient(to right, #ee26e4, #ff0000); /* Corregido el gradiente aquí */
+}
+
+/* Efecto hover para todos los botones */
+.icon-button-x:hover,
+.icon-button-check:hover,
+.icon-button-heart:hover {
+  filter: brightness(0.9); /* Opción para oscurecer un poco el botón al pasar el mouse */
+}
+
+/* Estilo del icono dentro del botón */
+.icon-button-x ion-icon,
+.icon-button-check ion-icon,
+.icon-button-heart ion-icon {
+  font-size: 30px; /* Aumenta el tamaño de los iconos */
+  color: white; /* Cambia el color del icono a blanco */
+}

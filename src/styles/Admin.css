@@ -1,0 +1,51 @@
+/* AdminPage.css */
+
+.nav-container{
+    text-align: center;
+}
+.user-management-section {
+    padding: 16px;
+    text-align: center;
+    color: white;
+  }
+  
+  .user-table {
+    margin: 16px 0;
+    width: 100%;
+    overflow-x: auto;
+  }
+  
+  .user-table table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    color: #000;
+  }
+  
+  .user-table th,
+  .user-table td {
+    padding: 8px;
+    text-align: center;
+    border: 1px solid #ddd;
+  }
+  
+  .profile-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
+  
+  .report-section {
+    padding: 16px;
+    text-align: center;
+    color: white;
+  }
+  
+  .chart-container {
+    height: 200px;
+    margin-bottom: 16px;
+  }
+  
+  h2 {
+    color: #ffffff;
+  }

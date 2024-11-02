@@ -1,0 +1,30 @@
+/* NotificationsSettings.css */
+
+.notification-item {
+    display: flex; /* Usa flexbox */
+    justify-content: space-between; /* Espacia el label y el toggle */
+    align-items: center; /* Centra verticalmente */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 10px 16px; /* Espaciado alrededor */
+  }
+  
+  .notification-label {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, Arial, Helvetica, sans-serif !important;
+    font-weight: normal;
+    color: #333;
+  }
+
+  .config-tittle-label{
+    text-align: center;
+    font-family: Verdana, Geneva, Tahoma, sans-serif !important;
+    font-weight: bold;
+  }
+
+  .notification-item {
+  display: flex;
+  align-items: center; /* Centra verticalmente el ícono y el texto */
+}
+.notification-item ion-icon {
+  margin-right: 13px; /* Espacio entre el ícono y el texto */
+}
+
