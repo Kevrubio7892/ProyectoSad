@@ -60,11 +60,11 @@ const AdminPage: React.FC = () => {
 
   return (
     <IonPage>
-      <IonHeader className="">
-        <IonToolbar color="danger">
+      <IonHeader>
+        <IonToolbar className="nav-container" color="danger">
           <IonTitle>Administrador</IonTitle>
           <IonButtons slot="start">
-            <IonButton>
+            <IonButton onClick={() => history.push('/adminperfil')}>
               <IonIcon icon={person} slot="icon-only" />
             </IonButton>
           </IonButtons>

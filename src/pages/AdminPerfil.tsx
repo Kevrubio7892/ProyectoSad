@@ -81,7 +81,7 @@ const AdminProfilePage = () => {
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar color="danger">
+        <IonToolbar className="nav-container" color="danger">
           <IonButtons slot="start">
             <IonBackButton />
           </IonButtons>

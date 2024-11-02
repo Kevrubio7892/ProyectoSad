@@ -1,8 +1,10 @@
 /* Estilo para el contenedor central de perfil */
-.profile-container {
+.nav-container{
+  text-align: center;
+}
+.profile-contain {
     text-align: center;
     padding: 20px;
-    background-color: #b30000; /* Fondo rojo */
     color: white; /* Texto en blanco */
   }
   
