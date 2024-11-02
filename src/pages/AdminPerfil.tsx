@@ -114,7 +114,7 @@ const AdminProfilePage = () => {
         </IonItem>
 
         <IonItem className="personal-info-item">
-          <IonLabel>Correo:</IonLabel>
+          <IonLabel>Correoo:</IonLabel>
           {isEditing ? (
             <IonInput value={email} onIonChange={handlePhoneChange} />
           ) : (
