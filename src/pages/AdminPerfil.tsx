@@ -12,29 +12,41 @@ import {
   IonInput,
   IonIcon,
   IonActionSheet,
-  IonButton
+  IonButton,
+  IonAlert
 } from '@ionic/react';
+import { useHistory } from 'react-router-dom';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { camera } from 'ionicons/icons';
-import '../styles/Perfil.css'; // Importamos el archivo CSS
+import { camera, logOut } from 'ionicons/icons';
+import '../styles/Perfil.css';
 
 const AdminProfilePage = () => {
+  const history = useHistory();
   const [isEditing, setIsEditing] = useState(false);
-  
   const [name, setName] = useState("Ricardo Vergara");
   const [email, setEmail] = useState("ricardov@gmail.com");
   const [contact, setContact] = useState("945645623");
   const [address, setAddress] = useState("Luis Matte 4020");
   const [showActionSheet, setShowActionSheet] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState("https://image.europafm.com/clipping/cmsimages01/2022/09/28/2FAC71CF-4762-49D3-AA69-B1154B85D5D1/maria-becerra_104.jpg?crop=2457,2457,x476,y0&width=1200&height=1200&optimize=low&format=webply");
+  const [showLogoutAlert, setShowLogoutAlert] = useState(false); // Estado para mostrar la alerta
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
+  };
+  
+  const handleEmailChange= (e: any) => {
+    setEmail(e.target.value);
   };
 
   const handlePhoneChange = (e: any) => {
     setContact(e.target.value);
   };
+
+  const handleAddressChange= (e: any) => {
+    setAddress(e.target.value);
+  };
+
   const handleTakePhoto = async () => {
     const image = await Camera.getPhoto({
       quality: 90,
@@ -57,6 +69,15 @@ const AdminProfilePage = () => {
     setShowActionSheet(false);
   };
 
+  const handleLogout = () => {
+    setShowLogoutAlert(true); // Mostramos la alerta de confirmación
+  };
+
+  const confirmLogout = () => {
+    setShowLogoutAlert(false); // Cerramos la alerta
+    history.push('/login'); // Redirigimos al usuario a la pantalla de login
+  };
+
   return (
     <IonPage>
       <IonHeader>
@@ -65,6 +86,11 @@ const AdminProfilePage = () => {
             <IonBackButton />
           </IonButtons>
           <IonTitle>Administrador</IonTitle>
+          <IonButtons slot="end">
+            <IonButton onClick={handleLogout}>
+              <IonIcon icon={logOut} slot="icon-only" />
+            </IonButton>
+          </IonButtons>
         </IonToolbar>
       </IonHeader>
 
@@ -83,23 +109,35 @@ const AdminProfilePage = () => {
         </div>
 
         <IonItem className="personal-info-item">
-          <IonLabel>Nombre:</IonLabel>
-          <IonInput value={name} onIonChange={(e) => setName(e.detail.value!)} />
+          <IonLabel>Nombre: </IonLabel>
+          <p>{name}</p>         
         </IonItem>
 
         <IonItem className="personal-info-item">
           <IonLabel>Correo:</IonLabel>
-          <IonInput value={email} onIonChange={(e) => setEmail(e.detail.value!)} />
+          {isEditing ? (
+            <IonInput value={email} onIonChange={handlePhoneChange} />
+          ) : (
+            <p>{email}</p> 
+          )}
         </IonItem>
 
         <IonItem className="personal-info-item">
           <IonLabel>Contacto:</IonLabel>
-          <IonInput value={contact} onIonChange={(e) => setContact(e.detail.value!)} />
+          {isEditing ? (
+            <IonInput value={contact} onIonChange={handleEmailChange} />
+          ) : (
+            <p>{contact}</p> 
+          )}
         </IonItem>
 
         <IonItem className="personal-info-item">
           <IonLabel>Dirección:</IonLabel>
-          <IonInput value={address} onIonChange={(e) => setAddress(e.detail.value!)} />
+          {isEditing ? (
+            <IonInput value={address} onIonChange={handleAddressChange} />
+          ) : (
+            <p>{address}</p> 
+          )}
         </IonItem>
 
         <IonButton expand="block" onClick={handleEditToggle} className="edit-button">
@@ -121,6 +159,25 @@ const AdminProfilePage = () => {
             {
               text: 'Cancelar',
               role: 'cancel'
+            }
+          ]}
+        />
+
+        {/* Alerta de confirmación de cierre de sesión */}
+        <IonAlert
+          isOpen={showLogoutAlert}
+          onDidDismiss={() => setShowLogoutAlert(false)}
+          header={'Confirmación'}
+          message={'¿Desea cerrar su sesión?'}
+          buttons={[
+            {
+              text: 'Cancelar',
+              role: 'cancel',
+              handler: () => setShowLogoutAlert(false)
+            },
+            {
+              text: 'Aceptar',
+              handler: confirmLogout
             }
           ]}
         />
