@@ -1,5 +1,10 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth"; // Importa los módulos específicos para autenticación
+import { getFirestore } from "firebase/firestore";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+} from "firebase/auth"; // Importa los módulos específicos para autenticación
 
 const config = {
   apiKey: "AIzaSyDLTuAWrWpS_IvQ-hizXOo8Z2xHUM6tpaU",
@@ -11,6 +16,7 @@ const config = {
 };
 
 const app = initializeApp(config); // Inicializa la app de Firebase
+export const db = getFirestore(app);
 
 // Función para iniciar sesión
 export async function loginUser(username: string, password: string) {
@@ -28,7 +34,7 @@ export async function loginUser(username: string, password: string) {
 }
 
 // Función para registrar usuario
-import { FirebaseError } from 'firebase/app'; // Asegúrate de importar FirebaseError
+import { FirebaseError } from "firebase/app"; // Asegúrate de importar FirebaseError
 
 export async function registerUser(username: string, password: string) {
   const email = `${username}`.trim();
@@ -40,9 +46,11 @@ export async function registerUser(username: string, password: string) {
     return true;
   } catch (error) {
     const firebaseError = error as FirebaseError; // Aquí se hace la afirmación de tipo
-    console.error("Error al registrar usuario:", firebaseError.code, firebaseError.message);
+    console.error(
+      "Error al registrar usuario:",
+      firebaseError.code,
+      firebaseError.message
+    );
     return false;
   }
 }
-
-
