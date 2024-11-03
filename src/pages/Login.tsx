@@ -3,8 +3,9 @@ import { IonPage, IonContent, IonButton, IonInput, IonText, IonIcon, IonImg } fr
 import { logoGoogle, logoApple, callOutline } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
 import '../styles/Login.css';
-import logo from '../assets/logo.png'; // Asegúrate de que la ruta sea correcta
-import logo_SAD from '../assets/logo_SAD.png'; // Asegúrate de que la ruta sea correcta
+import logo from '../assets/logo.png';
+import logo_SAD from '../assets/logo_SAD.png';
+import { loginUser } from '../firebaseConfig';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>('');
@@ -13,22 +14,31 @@ const Login: React.FC = () => {
   const [passwordError, setPasswordError] = useState<string>('');
   const history = useHistory();
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     let isValid = true;
 
-    if (emailError === '') {
-      if (password.length < 6) {
-        setPasswordError('La contraseña debe tener al menos 6 caracteres');
-        isValid = false;
-      } else {
-        setPasswordError('');
-      }
+    /*if (!email.endsWith('@duacap.cl')) {
+      setEmailError('El correo debe tener el dominio @duacap.cl');
+      isValid = false;
+    } else {
+      setEmailError('');
+    }*/
+
+    if (password.length < 6) {
+      setPasswordError('La contraseña debe tener al menos 6 caracteres');
+      isValid = false;
+    } else {
+      setPasswordError('');
     }
 
     if (isValid) {
-      console.log('Iniciar sesión con correo:', email);
-      alert('Inicio de sesión exitoso');
-      history.push('/tarjetas');
+      const success = await loginUser(email, password);
+      if (success) {
+        alert('Inicio de sesión exitoso');
+        history.push('/tarjetas');
+      } else {
+        setPasswordError('Error en las credenciales de inicio de sesión.');
+      }
     }
   };
 
@@ -36,16 +46,14 @@ const Login: React.FC = () => {
     const value = e.detail.value!;
     setEmail(value);
 
-    // Validación del correo
     if (!value.endsWith('@duacap.cl')) {
       setEmailError('El correo debe tener el dominio @duacap.cl');
     } else {
-      setEmailError(''); // Eliminar el error si el formato es correcto
+      setEmailError('');
     }
   };
 
   const handlePasswordFocus = () => {
-    // Eliminar el error de correo al hacer clic en el input de contraseña
     setEmailError('');
   };
 
@@ -64,7 +72,6 @@ const Login: React.FC = () => {
   return (
     <IonPage>
       <IonContent className="login-content" fullscreen>
-        {/* Logos */}
         <IonImg src={logo} className="background-logo" />
         <IonImg src={logo_SAD} className="background-logo-sad" />
         <div className="terms-text">
@@ -72,8 +79,7 @@ const Login: React.FC = () => {
             Al tocar "Iniciar sesión", aceptas nuestros Términos. Conoce cómo procesamos tus datos en nuestra Política de Privacidad.
           </IonText>
         </div>
-        
-        {/* Formulario de correo */}
+
         <IonInput
           className="input"
           label="Correo electrónico"
@@ -86,7 +92,6 @@ const Login: React.FC = () => {
         />
         {emailError && <IonText color="danger" className="error-text">{emailError}</IonText>}
 
-        {/* Formulario de contraseña */}
         <IonInput
           className="input"
           label="Contraseña"
@@ -96,17 +101,15 @@ const Login: React.FC = () => {
           placeholder="Ingresa tu contraseña"
           value={password}
           onIonChange={(e) => setPassword(e.detail.value!)}
-          onFocus={handlePasswordFocus} // Agregado para manejar el enfoque
+          onFocus={handlePasswordFocus}
           color="medium"
         />
         {passwordError && <IonText color="danger" className="error-text">{passwordError}</IonText>}
 
-        {/* Botón de inicio de sesión */}
         <IonButton fill="clear" className="login-button" onClick={handleLogin}>
           <IonText className="ion-btn-text">Iniciar sesión</IonText>
         </IonButton>
 
-        {/* Botones de iconos (Apple, Google, Teléfono) */}
         <div className="button-container">
           <IonButton fill="clear" className="icon-button" onClick={handleAppleLogin}>
             <IonIcon icon={logoApple} size="large" color="light" />
@@ -121,18 +124,27 @@ const Login: React.FC = () => {
           </IonButton>
         </div>
 
-        {/* Texto para "Olvidaste tu contraseña?" */}
+        {/* Texto para registrar usuario */}
+        <div className="register-text">
+          <IonText
+            
+            style={{ cursor: 'pointer' }}
+            onClick={() => history.push('/register')} // Asegúrate de que la ruta /register esté configurada
+          >
+            ¿No tienes cuenta? Regístrate aquí
+          </IonText>
+        </div>
+
         <div className="forgot-password-text">
           <IonText
             className="forgot-password-text"
             onClick={() => history.push('/notificaciones')}
-            color="primary" // Cambia el color si lo deseas
-            style={{ cursor: 'pointer' }} // Cambia el cursor a pointer
+            color="primary"
+            style={{ cursor: 'pointer' }}
           >
             ¿Olvidaste tu contraseña?
           </IonText>
         </div>
-        
       </IonContent>
     </IonPage>
   );

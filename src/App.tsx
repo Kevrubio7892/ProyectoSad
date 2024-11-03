@@ -10,6 +10,7 @@ import Tarjetas from "./pages/Tarjetas";
 import Privacidad from "./pages/PrivacySettings";
 import Admin from "./pages/Admin";
 import AdminPerfil from "./pages/AdminPerfil";
+import Register from "./pages/Register";
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
 
@@ -61,6 +62,9 @@ const App: React.FC = () => (
         </Route>
         <Route exact path="/admin">
           <Admin />
+        </Route>
+        <Route exact path="/register">
+          <Register />
         </Route>
         {/* Redirige desde la ruta raíz a la página de login */}
         <Route exact path="/">

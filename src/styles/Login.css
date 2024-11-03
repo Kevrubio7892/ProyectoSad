@@ -96,3 +96,16 @@
     margin-bottom: 100px;
   }
   
+  .register-text {
+    text-align: center;
+    margin-top: 15px; /* Añade un poco de espacio por encima */
+    font-size: 14px;
+    color: #19436E; /* Un tono de azul que resalta */
+  }
+  
+  .register-text:hover {
+    text-decoration: underline;
+    color: lighter; /* Cambia a un tono más oscuro en hover */
+    cursor: pointer;
+  }
+  
