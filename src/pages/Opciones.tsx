@@ -1,11 +1,32 @@
-import React, { useState } from 'react';
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonButtons, IonBackButton, IonContent, IonList, IonItem, IonLabel, IonTextarea, IonIcon } from '@ionic/react';
-import { personCircle, notifications, lockClosed, logoInstagram, card, logOut, refresh } from 'ionicons/icons';
-import { useHistory } from 'react-router';
-import '../styles/Opciones.css';
+import React, { useState } from "react";
+import {
+  IonPage,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonButtons,
+  IonBackButton,
+  IonContent,
+  IonList,
+  IonItem,
+  IonLabel,
+  IonTextarea,
+  IonIcon,
+} from "@ionic/react";
+import {
+  personCircle,
+  notifications,
+  lockClosed,
+  logoInstagram,
+  card,
+  logOut,
+  refresh,
+} from "ionicons/icons";
+import { useHistory } from "react-router";
+import "../styles/Opciones.css";
 
 const SettingsPage = () => {
-  const [description, setDescription] = useState('');
+  const [description, setDescription] = useState("");
   const maxDescriptionLength = 100;
   const history = useHistory();
 
@@ -40,24 +61,24 @@ const SettingsPage = () => {
               placeholder="Ingrese su descripción"
               maxlength={maxDescriptionLength}
               value={description}
-              onIonChange={(e) => setDescription(e.target.value || '')}
+              onIonChange={(e) => setDescription(e.target.value || "")}
             ></IonTextarea>
           </IonItem>
           <IonItem lines="none" className="description-counter">
-            {description.length}/{maxDescriptionLength} 
+            {description.length}/{maxDescriptionLength}
           </IonItem>
         </IonList>
 
         <IonList>
-          <IonItem button onClick={() => history.push('/perfil')}>
+          <IonItem button onClick={() => history.push("/perfil")}>
             <IonIcon slot="start" icon={refresh} />
             <IonLabel>Datos personales</IonLabel>
           </IonItem>
-          <IonItem button onClick={() => history.push('/notificaciones')}>
+          <IonItem button onClick={() => history.push("/notificaciones")}>
             <IonIcon slot="start" icon={notifications} />
             <IonLabel>Notificaciones</IonLabel>
           </IonItem>
-          <IonItem button onClick={() => history.push('/privacidad')}>
+          <IonItem button onClick={() => history.push("/privacidad")}>
             <IonIcon slot="start" icon={lockClosed} />
             <IonLabel>Privacidad de la cuenta</IonLabel>
           </IonItem>
@@ -65,7 +86,7 @@ const SettingsPage = () => {
             <IonIcon slot="start" icon={logoInstagram} />
             <IonLabel>Vincular Instagram</IonLabel>
           </IonItem>
-          <IonItem button>
+          <IonItem button onClick={() => history.push("/gestion-suscripcion")}>
             <IonIcon slot="start" icon={card} />
             <IonLabel>Gestión suscripción</IonLabel>
           </IonItem>
