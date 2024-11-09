@@ -24,11 +24,22 @@ import {
 } from "ionicons/icons";
 import { useHistory } from "react-router";
 import "../styles/Opciones.css";
+import InstagramLogin from "./IgLogin";
 
 const SettingsPage = () => {
   const [description, setDescription] = useState("");
   const maxDescriptionLength = 100;
   const history = useHistory();
+
+  const instagramAuthUrl = `https://api.instagram.com/oauth/authorize
+  ?client_id=1084662546664405
+  &redirect_uri=https://localhost:8100/auth/instagram/callback
+  &scope=user_profile,user_media
+  &response_type=code`;
+
+  const handleInstagramLogin = () => {
+    window.location.href = instagramAuthUrl;
+  };
 
   return (
     <IonPage>
@@ -82,10 +93,13 @@ const SettingsPage = () => {
             <IonIcon slot="start" icon={lockClosed} />
             <IonLabel>Privacidad de la cuenta</IonLabel>
           </IonItem>
-          <IonItem button>
+          <IonItem button onClick={handleInstagramLogin}>
             <IonIcon slot="start" icon={logoInstagram} />
             <IonLabel>Vincular Instagram</IonLabel>
           </IonItem>
+
+          {/* Aquí se agrega el botón para vincular Instagram */}
+          <InstagramLogin />
           <IonItem button onClick={() => history.push("/gestion-suscripcion")}>
             <IonIcon slot="start" icon={card} />
             <IonLabel>Gestión suscripción</IonLabel>

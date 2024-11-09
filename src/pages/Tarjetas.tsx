@@ -23,6 +23,7 @@ import LikeAnimation from "../components/LikeAnimation"; // Importa el component
 import CheckAnimation from "../components/CheckAnimation"; // Importa el componente de animación de check
 import XAnimation from "../components/XAnimation";
 import { useHistory } from "react-router-dom"; // Importa useHistory
+import PayPalButton from "../pages/PayPalButton";
 import "../styles/Tarjetas.css";
 
 interface CardData {
@@ -53,6 +54,7 @@ const CardView: React.FC = () => {
   const [showLikeAnimation, setShowLikeAnimation] = useState(false); // Estado para la animación de like
   const [showCheckAnimation, setShowCheckAnimation] = useState(false); // Estado para la animación de check
   const [showPremiumModal, setShowPremiumModal] = useState(false);
+  const [showPayPalButton, setShowPayPalButton] = useState(false);
 
   const cardRef = useRef<HTMLDivElement | null>(null);
   const history = useHistory(); // Inicializa useHistory
@@ -72,6 +74,10 @@ const CardView: React.FC = () => {
   const handleLikeClick = () => {
     setShowLikeAnimation(true); // Mostrar la animación al hacer clic en el corazón
     setShowPremiumModal(true);
+  };
+
+  const handlePremiumClick = () => {
+    setShowPayPalButton(true); // Muestra el botón de PayPal cuando el usuario quiere pasarse a premium
   };
 
   const handleCheckClick = () => {
@@ -207,12 +213,13 @@ const CardView: React.FC = () => {
               <h1>¡CAMBIATE A PREMIUM!</h1>
               <p>Da super likes o reparte likes ilimitados.</p>
               <p>Presiona el botón para dirigirte al pago.</p>
-              <IonButton
-                onClick={() => setShowPremiumModal(false)}
-                color="danger"
-              >
+              <IonButton onClick={handlePremiumClick} color="danger">
                 Pasarme a premium
               </IonButton>
+              {/* Muestra el botón de PayPal solo si el usuario hizo clic en "Pasarme a premium" */}
+              {showPayPalButton && (
+                <PayPalButton onSuccess={() => console.log("Pago exitoso")} />
+              )}
             </div>
           </IonModal>
         )}

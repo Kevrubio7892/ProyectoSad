@@ -2,15 +2,21 @@ import React from "react";
 import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 import axios from "axios";
 
-const PayPalButton = ({ onSuccess }) => {
+interface PayPalButtonProps {
+  onSuccess: () => void;
+}
+
+const PayPalButton: React.FC<PayPalButtonProps> = ({ onSuccess }) => {
   const [{ isPending }] = usePayPalScriptReducer();
 
-  const createOrder = async () => {
+  // Especifica el tipo de retorno como `Promise<string>` para indicar que devuelve el ID de la orden
+  const createOrder = async (): Promise<string> => {
     const response = await axios.post("http://localhost:3001/create-order");
     return response.data.orderID;
   };
 
-  const onApprove = async (data) => {
+  // Declara el tipo de `data` como `Record<string, any>` o especifica tipos más específicos si los conoces
+  const onApprove = async (data: Record<string, any>) => {
     await axios.post("http://localhost:3001/capture-order", {
       orderID: data.orderID,
     });

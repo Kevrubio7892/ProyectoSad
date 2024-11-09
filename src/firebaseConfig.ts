@@ -4,6 +4,8 @@ import {
   getAuth,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  signInWithPhoneNumber,
+  RecaptchaVerifier,
 } from "firebase/auth"; // Importa los módulos específicos para autenticación
 
 const config = {
@@ -17,6 +19,28 @@ const config = {
 
 const app = initializeApp(config); // Inicializa la app de Firebase
 export const db = getFirestore(app);
+
+// Inicializa la app y la autenticación de Firebase
+const auth = getAuth(app);
+
+export const registerUserWithPhone = async (
+  phoneNumber: string,
+  appVerifier: RecaptchaVerifier
+) => {
+  try {
+    const confirmationResult = await signInWithPhoneNumber(
+      auth,
+      phoneNumber,
+      appVerifier
+    );
+    return confirmationResult;
+  } catch (error) {
+    console.error("Error en la autenticación con número telefónico:", error);
+    throw error;
+  }
+};
+
+export { auth, RecaptchaVerifier };
 
 // Función para iniciar sesión
 export async function loginUser(username: string, password: string) {
