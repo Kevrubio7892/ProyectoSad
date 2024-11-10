@@ -109,3 +109,9 @@
     cursor: pointer;
   }
   
+  /* Definimos los estilos del loading */
+.custom-loading .loading-wrapper {
+  background-color: #FFFFFF; /* Fondo oscuro */
+  border-radius: 10px; /* Bordes redondeados */
+}
+

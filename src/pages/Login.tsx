@@ -1,28 +1,24 @@
 import React, { useState } from 'react';
-import { IonPage, IonContent, IonButton, IonInput, IonText, IonIcon, IonImg } from '@ionic/react';
+import { IonPage, IonContent, IonButton, IonInput, IonText, IonIcon, IonImg, IonLoading } from '@ionic/react';
 import { logoGoogle, logoApple, callOutline } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
 import '../styles/Login.css';
 import logo from '../assets/logo.png';
 import logo_SAD from '../assets/logo_SAD.png';
-import { loginUser } from '../firebaseConfig';
+import { loginUser, googleLogin } from '../firebaseConfig';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [emailError, setEmailError] = useState<string>('');
   const [passwordError, setPasswordError] = useState<string>('');
+  const [showLoading, setShowLoading] = useState<boolean>(false); // Estado para el loading
   const history = useHistory();
 
   const handleLogin = async () => {
-    let isValid = true;
+    setShowLoading(true);  // Mostrar el loading
 
-    /*if (!email.endsWith('@duacap.cl')) {
-      setEmailError('El correo debe tener el dominio @duacap.cl');
-      isValid = false;
-    } else {
-      setEmailError('');
-    }*/
+    let isValid = true;
 
     if (password.length < 6) {
       setPasswordError('La contraseña debe tener al menos 6 caracteres');
@@ -35,30 +31,27 @@ const Login: React.FC = () => {
       const success = await loginUser(email, password);
       if (success) {
         alert('Inicio de sesión exitoso');
-        history.push('/tarjetas');
+        history.push('/register-form-google');
       } else {
         setPasswordError('Error en las credenciales de inicio de sesión.');
       }
     }
+
+    setShowLoading(false);  // Ocultar el loading al terminar
   };
 
-  const handleEmailChange = (e: CustomEvent) => {
-    const value = e.detail.value!;
-    setEmail(value);
+  const handleGoogleLogin = async () => {
+    setShowLoading(true);  // Mostrar el loading
 
-    if (!value.endsWith('@duacap.cl')) {
-      setEmailError('El correo debe tener el dominio @duacap.cl');
+    const success = await googleLogin();
+    if (success) {
+      history.push('/register-form-google'); // Redirigir al usuario después de iniciar sesión
+      alert('Inicio de sesión exitoso');
     } else {
-      setEmailError('');
+      alert('Error al iniciar sesión con Google');
     }
-  };
 
-  const handlePasswordFocus = () => {
-    setEmailError('');
-  };
-
-  const handleGoogleLogin = () => {
-    console.log('Iniciar sesión con Google');
+    setShowLoading(false);  // Ocultar el loading al terminar
   };
 
   const handleAppleLogin = () => {
@@ -87,7 +80,7 @@ const Login: React.FC = () => {
           labelPlacement="floating"
           placeholder="Ingresa tu correo"
           value={email}
-          onIonChange={handleEmailChange}
+          onIonChange={(e) => setEmail(e.detail.value!)}
           color="medium"
         />
         {emailError && <IonText color="danger" className="error-text">{emailError}</IonText>}
@@ -101,7 +94,6 @@ const Login: React.FC = () => {
           placeholder="Ingresa tu contraseña"
           value={password}
           onIonChange={(e) => setPassword(e.detail.value!)}
-          onFocus={handlePasswordFocus}
           color="medium"
         />
         {passwordError && <IonText color="danger" className="error-text">{passwordError}</IonText>}
@@ -124,12 +116,10 @@ const Login: React.FC = () => {
           </IonButton>
         </div>
 
-        {/* Texto para registrar usuario */}
         <div className="register-text">
           <IonText
-            
             style={{ cursor: 'pointer' }}
-            onClick={() => history.push('/register')} // Asegúrate de que la ruta /register esté configurada
+            onClick={() => history.push('/register')}
           >
             ¿No tienes cuenta? Regístrate aquí
           </IonText>
@@ -145,6 +135,15 @@ const Login: React.FC = () => {
             ¿Olvidaste tu contraseña?
           </IonText>
         </div>
+
+        {/* Agregar el IonLoading aquí */}
+        <IonLoading
+          className="custom-loading" 
+          isOpen={showLoading}
+          message={'Iniciando sesión...'}
+          onDidDismiss={() => setShowLoading(false)}
+           // Clase personalizada para estilizar el loading
+        />
       </IonContent>
     </IonPage>
   );
