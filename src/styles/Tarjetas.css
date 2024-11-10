@@ -77,8 +77,8 @@
 
 .button-container {
   display: flex;
-  justify-content: space-around;
-  width: 80%;
+  justify-content: space-around !important; 
+  width: 80% !important;
   padding-top: 25px;
 }
 
@@ -124,4 +124,81 @@
 .icon-button-heart ion-icon {
   font-size: 30px; /* Aumenta el tamaño de los iconos */
   color: white; /* Cambia el color del icono a blanco */
+}
+
+/* Personalización del IonModal */
+.premium-modal {
+  --width: 90%; /* Ancho responsivo */
+  --height: auto;
+  --border-radius: 15px; /* Bordes redondeados */
+  --background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Contenedor del contenido del modal */
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 15px; /* Espaciado entre elementos */
+  background: linear-gradient(#70276d, #DC2527, #FF5860);
+}
+
+/* Título del modal */
+.modal-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: white; /* Rojo llamativo */
+}
+
+/* Descripción del modal */
+.modal-description {
+  font-size: 1rem;
+  color: white; /* Gris neutro */
+  margin: 0 10px; /* Margen para evitar bordes */
+}
+
+/* Instrucción o texto adicional */
+.modal-instruction {
+  font-size: 0.9rem;
+  color: white;
+}
+
+/* Botón principal */
+.premium-modal .ion-button-premium {
+  --background: linear-gradient(to right, #DC2527, #19436E); /* Gradiente atractivo */
+  --border-radius: 20px; /* Bordes redondeados */
+  --padding: 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  width:  80%;
+}
+
+/* Botón secundario */
+.premium-modal .ion-button-cancelar {
+  color: white; /* Texto gris */
+  --padding: 10px;
+  --border-radius: 20px;
+  font-size: 1rem;
+  --background: linear-gradient(to right, #DC2527, #19436E);
+  font-weight: bold;
+  margin-bottom: 20px;
+  width:  80%;
+  box-shadow: #19436E;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

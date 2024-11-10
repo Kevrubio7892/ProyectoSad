@@ -40,6 +40,7 @@
   /* Adjust size as needed */
   margin: auto;
 }
+<<<<<<< HEAD
 
 .input {
   width: 90%;
@@ -150,3 +151,54 @@
   color: black;
   font-size: medium;
 }
+=======
+  
+  .login-button .ion-btn-text {
+    color: #FFFFFF;
+    font-size: 13px;
+    font-weight: bolder;
+    text-align: center;
+  }
+  
+  .button-container {
+    display: flex; /* Flexbox para disposición horizontal */
+    justify-content: center; /* Centra los botones horizontalmente */
+    width: 50%; /* Ajusta según sea necesario */
+    margin: 20px auto; /* Usa auto para centrar el contenedor en el padre */
+  }
+  
+  .icon-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1px;
+  }
+  
+  .forgot-password-text {
+    color: #FFFFFF;
+    font-size: 14px;
+    margin-top: 5px;
+    text-align: center;
+    margin-bottom: 100px;
+  }
+  
+  .register-text {
+    text-align: center;
+    margin-top: 15px; /* Añade un poco de espacio por encima */
+    font-size: 14px;
+    color: #19436E; /* Un tono de azul que resalta */
+  }
+  
+  .register-text:hover {
+    text-decoration: underline;
+    color: lighter; /* Cambia a un tono más oscuro en hover */
+    cursor: pointer;
+  }
+  
+  /* Definimos los estilos del loading */
+.custom-loading .loading-wrapper {
+  background-color: #FFFFFF; /* Fondo oscuro */
+  border-radius: 10px; /* Bordes redondeados */
+}
+
+>>>>>>> 6d9ab620d477cb30df5739b06b316dc330cf0616

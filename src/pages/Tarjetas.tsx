@@ -205,10 +205,12 @@ const CardView: React.FC = () => {
           </IonButton>
         </div>
         {showPremiumModal && (
-          <IonModal
-            isOpen={showPremiumModal}
-            onDidDismiss={() => setShowPremiumModal(false)}
+        <IonModal
+          isOpen={showPremiumModal}
+          onDidDismiss={() => setShowPremiumModal(false)}
+          className="premium-modal" // Clase personalizada
           >
+<<<<<<< HEAD
             <div className="modal-content">
               <h1>¡CAMBIATE A PREMIUM!</h1>
               <p>Da super likes o reparte likes ilimitados.</p>
@@ -223,6 +225,26 @@ const CardView: React.FC = () => {
             </div>
           </IonModal>
         )}
+=======
+          <div className="modal-content">
+            <h1 className="modal-title">¡CAMBIATE A PREMIUM!</h1>
+            <p className="modal-description">Da super likes o reparte likes ilimitados.</p>
+            <p className="modal-instruction">Presiona el botón para dirigirte al pago.</p>
+            <IonButton onClick={() => setShowPremiumModal(false)} expand="block" className="ion-button-premium">
+              Pasarme a premium
+            </IonButton>
+            <IonButton
+              onClick={() => setShowPremiumModal(false)}
+              expand="block"           
+              className="ion-button-cancelar"
+            >
+              Cancelar
+            </IonButton>
+          </div>
+        </IonModal>
+      )}
+
+>>>>>>> 6d9ab620d477cb30df5739b06b316dc330cf0616
         {showXAnimation && <XAnimation onComplete={handleXAnimationComplete} />}{" "}
         {/* Mostrar animación de X */}
         {showLikeAnimation && (

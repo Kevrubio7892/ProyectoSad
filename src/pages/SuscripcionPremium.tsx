@@ -1,6 +1,6 @@
-// PremiumUpgradePage.tsx
+/* PremiumUpgradePage.tsx
 import React from "react";
-import PayPalButton from "./PayPalButton";
+import PayPalButton from "../components/PayPalButton";
 import { useHistory } from "react-router";
 
 const PremiumUpgradePage = () => {
@@ -21,4 +21,4 @@ const PremiumUpgradePage = () => {
   );
 };
 
-export default PremiumUpgradePage;
+export default PremiumUpgradePage;*/
