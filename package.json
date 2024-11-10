@@ -30,11 +30,8 @@
     "axios": "^1.7.7",
     "body-parser": "^1.20.3",
     "chart.js": "^4.4.6",
-<<<<<<< HEAD
     "cordova-instagram-plugin": "^0.6.2",
-=======
     "cors": "^2.8.5",
->>>>>>> 6d9ab620d477cb30df5739b06b316dc330cf0616
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "firebase": "^11.0.1",

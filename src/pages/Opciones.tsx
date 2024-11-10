@@ -33,9 +33,10 @@ const SettingsPage = () => {
   const history = useHistory();
   const location = useLocation();
 
-  const clientId = '1764117657748954'; // Tu Client ID de Instagram
-  const clientSecret = '8a8379cd6015f037ecd896b8fb217f6c'; // Tu Client Secret de Instagram
-  const redirectUri = 'https://a247-2800-300-6a14-8010-195e-b95d-79a3-64e2.ngrok-free.app/opciones'; // Cambia esto a tu ruta "/opciones"
+  const clientId = "1764117657748954"; // Tu Client ID de Instagram
+  const clientSecret = "8a8379cd6015f037ecd896b8fb217f6c"; // Tu Client Secret de Instagram
+  const redirectUri =
+    "https://a247-2800-300-6a14-8010-195e-b95d-79a3-64e2.ngrok-free.app/opciones"; // Cambia esto a tu ruta "/opciones"
 
   // Redirige a la página de autorización de Instagram
   const handleLinkInstagram = () => {
@@ -45,16 +46,19 @@ const SettingsPage = () => {
 
   // Función para obtener el token de acceso con el 'code'
   const fetchAccessToken = async (code: string) => {
-    const response = await fetch('https://api.instagram.com/oauth/access_token', {
-      method: 'POST',
-      body: new URLSearchParams({
-        client_id: clientId,
-        client_secret: clientSecret,
-        grant_type: 'authorization_code',
-        redirect_uri: redirectUri,
-        code,
-      }),
-    });
+    const response = await fetch(
+      "https://api.instagram.com/oauth/access_token",
+      {
+        method: "POST",
+        body: new URLSearchParams({
+          client_id: clientId,
+          client_secret: clientSecret,
+          grant_type: "authorization_code",
+          redirect_uri: redirectUri,
+          code,
+        }),
+      }
+    );
 
     const data = await response.json();
     return data.access_token;
@@ -82,7 +86,9 @@ const SettingsPage = () => {
           // Redirige a la página de opciones y actualiza el estado con el nombre de usuario
           history.push("/opciones");
         })
-        .catch((error) => console.error("Error al obtener el perfil de Instagram", error));
+        .catch((error) =>
+          console.error("Error al obtener el perfil de Instagram", error)
+        );
     }
   }, [location.search, history]);
 
@@ -148,11 +154,8 @@ const SettingsPage = () => {
             <IonIcon slot="start" icon={lockClosed} />
             <IonLabel>Privacidad de la cuenta</IonLabel>
           </IonItem>
-<<<<<<< HEAD
-          <IonItem button onClick={handleInstagramLogin}>
-=======
+          <IonItem button onClick={handleInstagramLogin} />
           <IonItem button onClick={handleLinkInstagram}>
->>>>>>> 6d9ab620d477cb30df5739b06b316dc330cf0616
             <IonIcon slot="start" icon={logoInstagram} />
             <IonLabel>Vincular Instagram</IonLabel>
             {instagramName && <IonLabel slot="end">{instagramName}</IonLabel>}

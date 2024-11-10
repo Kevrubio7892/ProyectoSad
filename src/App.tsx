@@ -11,11 +11,8 @@ import Privacidad from "./pages/PrivacySettings";
 import Admin from "./pages/Admin";
 import AdminPerfil from "./pages/AdminPerfil";
 import Register from "./pages/Register";
-<<<<<<< HEAD
 import RegisterNumber from "./pages/RegisterNumber";
-=======
 import RegistarFormGoogle from "./pages/RegisterFormGoogle"
->>>>>>> 6d9ab620d477cb30df5739b06b316dc330cf0616
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
 
@@ -71,13 +68,11 @@ const App: React.FC = () => (
         <Route exact path="/register">
           <Register />
         </Route>
-<<<<<<< HEAD
         <Route exact path="/register-number">
           <RegisterNumber />
-=======
+        </Route>
         <Route exact path="/register-form-google">
           <RegistarFormGoogle />
->>>>>>> 6d9ab620d477cb30df5739b06b316dc330cf0616
         </Route>
         {/* Redirige desde la ruta raíz a la página de login */}
         <Route exact path="/">

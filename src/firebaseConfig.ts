@@ -1,16 +1,14 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-<<<<<<< HEAD
 import {
   getAuth,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPhoneNumber,
   RecaptchaVerifier,
+  signInWithPopup, GoogleAuthProvider
 } from "firebase/auth"; // Importa los módulos específicos para autenticación
-=======
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
->>>>>>> 6d9ab620d477cb30df5739b06b316dc330cf0616
+
 
 const config = {
   apiKey: "AIzaSyBjdhCSMelJZCYJU-Ky6dwNdSSOTejBp6Y",
@@ -23,11 +21,10 @@ const config = {
 
 const app = initializeApp(config); // Inicializa la app de Firebase
 export const db = getFirestore(app);
-export const auth = getAuth(); // Obtén la instancia de autenticación
+const auth = getAuth(app); // Obtén la instancia de autenticación
 
-<<<<<<< HEAD
 // Inicializa la app y la autenticación de Firebase
-const auth = getAuth(app);
+
 
 export const registerUserWithPhone = async (
   phoneNumber: string,
@@ -48,7 +45,6 @@ export const registerUserWithPhone = async (
 
 export { auth, RecaptchaVerifier };
 
-=======
 export async function googleLogin() {
   const provider = new GoogleAuthProvider();
   try {
@@ -61,7 +57,7 @@ export async function googleLogin() {
     return false;
   }
 }
->>>>>>> 6d9ab620d477cb30df5739b06b316dc330cf0616
+
 // Función para iniciar sesión
 export async function loginUser(username: string, password: string) {
   const email = `${username}`;

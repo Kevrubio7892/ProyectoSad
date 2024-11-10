@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useState } from "react";
 import {
   IonPage,
@@ -9,36 +8,21 @@ import {
   IonIcon,
   IonImg,
   IonButtons,
+  IonLoading,
 } from "@ionic/react";
 import { logoGoogle, logoApple, callOutline } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
 import "../styles/Login.css";
 import logo from "../assets/logo.png";
 import logo_SAD from "../assets/logo_SAD.png";
-import { loginUser } from "../firebaseConfig";
+import { loginUser, googleLogin } from "../firebaseConfig";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [emailError, setEmailError] = useState<string>("");
   const [passwordError, setPasswordError] = useState<string>("");
-=======
-import React, { useState } from 'react';
-import { IonPage, IonContent, IonButton, IonInput, IonText, IonIcon, IonImg, IonLoading } from '@ionic/react';
-import { logoGoogle, logoApple, callOutline } from 'ionicons/icons';
-import { useHistory } from 'react-router-dom';
-import '../styles/Login.css';
-import logo from '../assets/logo.png';
-import logo_SAD from '../assets/logo_SAD.png';
-import { loginUser, googleLogin } from '../firebaseConfig';
-
-const Login: React.FC = () => {
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [emailError, setEmailError] = useState<string>('');
-  const [passwordError, setPasswordError] = useState<string>('');
   const [showLoading, setShowLoading] = useState<boolean>(false); // Estado para el loading
->>>>>>> 6d9ab620d477cb30df5739b06b316dc330cf0616
   const history = useHistory();
 
   const handleLogin = async () => {
@@ -56,13 +40,10 @@ const Login: React.FC = () => {
     if (isValid) {
       const success = await loginUser(email, password);
       if (success) {
-<<<<<<< HEAD
         alert("Inicio de sesión exitoso");
         history.push("/tarjetas");
-=======
         alert('Inicio de sesión exitoso');
         history.push('/register-form-google');
->>>>>>> 6d9ab620d477cb30df5739b06b316dc330cf0616
       } else {
         setPasswordError("Error en las credenciales de inicio de sesión.");
       }
@@ -74,33 +55,21 @@ const Login: React.FC = () => {
   const handleGoogleLogin = async () => {
     setShowLoading(true);  // Mostrar el loading
 
-<<<<<<< HEAD
-    if (!value.endsWith("@duacap.cl")) {
-      setEmailError("El correo debe tener el dominio @duacap.cl");
-    } else {
-      setEmailError("");
-=======
     const success = await googleLogin();
     if (success) {
       history.push('/register-form-google'); // Redirigir al usuario después de iniciar sesión
       alert('Inicio de sesión exitoso');
     } else {
       alert('Error al iniciar sesión con Google');
->>>>>>> 6d9ab620d477cb30df5739b06b316dc330cf0616
     }
-
-<<<<<<< HEAD
-  const handlePasswordFocus = () => {
-    setEmailError("");
-  };
-
-  const handleGoogleLogin = () => {
-    console.log("Iniciar sesión con Google");
-=======
+  
     setShowLoading(false);  // Ocultar el loading al terminar
->>>>>>> 6d9ab620d477cb30df5739b06b316dc330cf0616
+
   };
 
+    const handlePasswordFocus = () => {
+      setEmailError("");
+    };
   const handleAppleLogin = () => {
     console.log("Iniciar sesión con Apple");
   };
@@ -189,13 +158,8 @@ const Login: React.FC = () => {
 
         <div className="register-text">
           <IonText
-<<<<<<< HEAD
             style={{ cursor: "pointer" }}
             onClick={() => history.push("/register")} // Asegúrate de que la ruta /register esté configurada
-=======
-            style={{ cursor: 'pointer' }}
-            onClick={() => history.push('/register')}
->>>>>>> 6d9ab620d477cb30df5739b06b316dc330cf0616
           >
             ¿No tienes cuenta? Regístrate aquí
           </IonText>

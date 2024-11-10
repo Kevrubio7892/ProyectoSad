@@ -23,7 +23,6 @@ import LikeAnimation from "../components/LikeAnimation"; // Importa el component
 import CheckAnimation from "../components/CheckAnimation"; // Importa el componente de animación de check
 import XAnimation from "../components/XAnimation";
 import { useHistory } from "react-router-dom"; // Importa useHistory
-import PayPalButton from "../pages/PayPalButton";
 import "../styles/Tarjetas.css";
 
 interface CardData {
@@ -210,22 +209,7 @@ const CardView: React.FC = () => {
           onDidDismiss={() => setShowPremiumModal(false)}
           className="premium-modal" // Clase personalizada
           >
-<<<<<<< HEAD
-            <div className="modal-content">
-              <h1>¡CAMBIATE A PREMIUM!</h1>
-              <p>Da super likes o reparte likes ilimitados.</p>
-              <p>Presiona el botón para dirigirte al pago.</p>
-              <IonButton onClick={handlePremiumClick} color="danger">
-                Pasarme a premium
-              </IonButton>
-              {/* Muestra el botón de PayPal solo si el usuario hizo clic en "Pasarme a premium" */}
-              {showPayPalButton && (
-                <PayPalButton onSuccess={() => console.log("Pago exitoso")} />
-              )}
-            </div>
-          </IonModal>
-        )}
-=======
+
           <div className="modal-content">
             <h1 className="modal-title">¡CAMBIATE A PREMIUM!</h1>
             <p className="modal-description">Da super likes o reparte likes ilimitados.</p>
@@ -244,7 +228,6 @@ const CardView: React.FC = () => {
         </IonModal>
       )}
 
->>>>>>> 6d9ab620d477cb30df5739b06b316dc330cf0616
         {showXAnimation && <XAnimation onComplete={handleXAnimationComplete} />}{" "}
         {/* Mostrar animación de X */}
         {showLikeAnimation && (
