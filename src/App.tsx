@@ -11,6 +11,7 @@ import Privacidad from "./pages/PrivacySettings";
 import Admin from "./pages/Admin";
 import AdminPerfil from "./pages/AdminPerfil";
 import Register from "./pages/Register";
+import RegistarFormGoogle from "./pages/RegisterFormGoogle"
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
 
@@ -65,6 +66,9 @@ const App: React.FC = () => (
         </Route>
         <Route exact path="/register">
           <Register />
+        </Route>
+        <Route exact path="/register-form-google">
+          <RegistarFormGoogle />
         </Route>
         {/* Redirige desde la ruta raíz a la página de login */}
         <Route exact path="/">

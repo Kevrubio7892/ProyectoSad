@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   IonPage,
   IonHeader,
@@ -22,13 +22,68 @@ import {
   logOut,
   refresh,
 } from "ionicons/icons";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import "../styles/Opciones.css";
 
 const SettingsPage = () => {
   const [description, setDescription] = useState("");
+  const [instagramName, setInstagramName] = useState<string | null>(null);
   const maxDescriptionLength = 100;
   const history = useHistory();
+  const location = useLocation();
+
+  const clientId = '1764117657748954'; // Tu Client ID de Instagram
+  const clientSecret = '8a8379cd6015f037ecd896b8fb217f6c'; // Tu Client Secret de Instagram
+  const redirectUri = 'https://a247-2800-300-6a14-8010-195e-b95d-79a3-64e2.ngrok-free.app/opciones'; // Cambia esto a tu ruta "/opciones"
+
+  // Redirige a la página de autorización de Instagram
+  const handleLinkInstagram = () => {
+    const instagramAuthUrl = `https://api.instagram.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=user_profile,user_media&response_type=code`;
+    window.location.href = instagramAuthUrl;
+  };
+
+  // Función para obtener el token de acceso con el 'code'
+  const fetchAccessToken = async (code: string) => {
+    const response = await fetch('https://api.instagram.com/oauth/access_token', {
+      method: 'POST',
+      body: new URLSearchParams({
+        client_id: clientId,
+        client_secret: clientSecret,
+        grant_type: 'authorization_code',
+        redirect_uri: redirectUri,
+        code,
+      }),
+    });
+
+    const data = await response.json();
+    return data.access_token;
+  };
+
+  // Función para obtener el nombre de usuario del perfil de Instagram
+  const fetchInstagramProfile = async (accessToken: string) => {
+    const response = await fetch(
+      `https://graph.instagram.com/me?fields=id,username&access_token=${accessToken}`
+    );
+    const data = await response.json();
+    return data.username;
+  };
+
+  // Captura el código de la URL, obtiene el perfil y redirige
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const code = params.get("code");
+
+    if (code) {
+      fetchAccessToken(code)
+        .then((accessToken) => fetchInstagramProfile(accessToken))
+        .then((username) => {
+          setInstagramName(username);
+          // Redirige a la página de opciones y actualiza el estado con el nombre de usuario
+          history.push("/opciones");
+        })
+        .catch((error) => console.error("Error al obtener el perfil de Instagram", error));
+    }
+  }, [location.search, history]);
 
   return (
     <IonPage>
@@ -82,15 +137,16 @@ const SettingsPage = () => {
             <IonIcon slot="start" icon={lockClosed} />
             <IonLabel>Privacidad de la cuenta</IonLabel>
           </IonItem>
-          <IonItem button>
+          <IonItem button onClick={handleLinkInstagram}>
             <IonIcon slot="start" icon={logoInstagram} />
             <IonLabel>Vincular Instagram</IonLabel>
+            {instagramName && <IonLabel slot="end">{instagramName}</IonLabel>}
           </IonItem>
           <IonItem button onClick={() => history.push("/gestion-suscripcion")}>
             <IonIcon slot="start" icon={card} />
             <IonLabel>Gestión suscripción</IonLabel>
           </IonItem>
-          <IonItem button>
+          <IonItem button onClick={() => history.push("/login")}>
             <IonIcon slot="start" icon={logOut} />
             <IonLabel>Cerrar sesión</IonLabel>
           </IonItem>

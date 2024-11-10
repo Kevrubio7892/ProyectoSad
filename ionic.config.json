@@ -3,5 +3,9 @@
   "integrations": {
     "capacitor": {}
   },
-  "type": "react-vite"
+  "type": "react-vite",
+  "ssl": {
+    "key": "./server-key.pem",
+    "cert": "./server-cert.pem"
+  }
 }
