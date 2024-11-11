@@ -23,26 +23,27 @@ import {
   refresh,
 } from "ionicons/icons";
 import { useHistory, useLocation } from "react-router";
+import { onAuthStateChanged } from "firebase/auth";
+import { getUserData, auth } from "../firebaseConfig"; // Ajusta el path según tu configuración
 import "../styles/Opciones.css";
 
-const SettingsPage = () => {
+const SettingsPage: React.FC = () => {
   const [description, setDescription] = useState("");
   const [instagramName, setInstagramName] = useState<string | null>(null);
+  const [userData, setUserData] = useState<any>(null); // Usa any para desactivar la verificación de tipos
   const maxDescriptionLength = 100;
   const history = useHistory();
   const location = useLocation();
 
-  const clientId = '1764117657748954'; // Tu Client ID de Instagram
-  const clientSecret = '8a8379cd6015f037ecd896b8fb217f6c'; // Tu Client Secret de Instagram
-  const redirectUri = 'https://a247-2800-300-6a14-8010-195e-b95d-79a3-64e2.ngrok-free.app/opciones'; // Cambia esto a tu ruta "/opciones"
+  const clientId = '1764117657748954';
+  const clientSecret = '8a8379cd6015f037ecd896b8fb217f6c';
+  const redirectUri = 'https://a247-2800-300-6a14-8010-195e-b95d-79a3-64e2.ngrok-free.app/opciones';
 
-  // Redirige a la página de autorización de Instagram
   const handleLinkInstagram = () => {
     const instagramAuthUrl = `https://api.instagram.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=user_profile,user_media&response_type=code`;
     window.location.href = instagramAuthUrl;
   };
 
-  // Función para obtener el token de acceso con el 'code'
   const fetchAccessToken = async (code: string) => {
     const response = await fetch('https://api.instagram.com/oauth/access_token', {
       method: 'POST',
@@ -59,7 +60,6 @@ const SettingsPage = () => {
     return data.access_token;
   };
 
-  // Función para obtener el nombre de usuario del perfil de Instagram
   const fetchInstagramProfile = async (accessToken: string) => {
     const response = await fetch(
       `https://graph.instagram.com/me?fields=id,username&access_token=${accessToken}`
@@ -68,7 +68,6 @@ const SettingsPage = () => {
     return data.username;
   };
 
-  // Captura el código de la URL, obtiene el perfil y redirige
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const code = params.get("code");
@@ -78,12 +77,22 @@ const SettingsPage = () => {
         .then((accessToken) => fetchInstagramProfile(accessToken))
         .then((username) => {
           setInstagramName(username);
-          // Redirige a la página de opciones y actualiza el estado con el nombre de usuario
           history.push("/opciones");
         })
         .catch((error) => console.error("Error al obtener el perfil de Instagram", error));
     }
   }, [location.search, history]);
+
+  // Obtenemos datos del usuario autenticado de Firestore
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const data = await getUserData(user.uid);
+        setUserData(data); // No necesitamos casting aquí porque userData es de tipo any
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   return (
     <IonPage>
@@ -103,8 +112,14 @@ const SettingsPage = () => {
             alt="Profile"
             className="profile-image"
           />
-          <h2 className="profile-name">Jenny Nails</h2>
-          <p>Técnico Veterinario</p>
+          {userData ? (
+            <>
+              <h2 className="profile-name">{userData.nombreCompleto}</h2>
+              <p>Carrera: {userData.carrera}</p>
+            </>
+          ) : (
+            <p>Cargando datos del usuario...</p>
+          )}
         </div>
 
         <IonList>

@@ -58,7 +58,7 @@
   .login-button {
     padding: 10px 30px; /* Aumenta el padding superior e inferior */
     --border-radius: 10px;
-    margin: 10px 0 px;
+    margin: 10px 0px;
     width: 100%;
     --background: #19436E;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;

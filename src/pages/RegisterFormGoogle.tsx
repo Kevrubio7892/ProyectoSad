@@ -1,38 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IonPage, IonContent, IonButton, IonInput, IonSelect, IonSelectOption, IonText, IonImg, IonLoading } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
 import '../styles/Login.css';
 import logo from '../assets/logo.png';
 import logo_SAD from '../assets/logo_SAD.png';
-import { db, auth, googleLogin } from '../firebaseConfig';
-import { addDoc, collection } from "firebase/firestore";
+import { registerEstudiante, getCarreras, getGeneros } from '../services/FireStoreServices';
 
-const RegisterFormGoogle: React.FC = () => {
+const RegisterForm: React.FC = () => {
   const [formData, setFormData] = useState({
     nombre: '',
     apellido: '',
     anioEstudio: '',
     carrera: '',
     genero: '',
-    sedeAcademica: 'Duoc UC Puente Alto' // Valor fijo de la sede
+    sedeAcademica: 'Duoc UC Puente Alto', // Valor fijo de la sede
+    fechaNacimiento: '' // Agregar el campo para la fecha de nacimiento
   });
   const [formError, setFormError] = useState<string>('');
-  const [showLoading, setShowLoading] = useState<boolean>(false); 
+  const [showLoading, setShowLoading] = useState<boolean>(false);
+  const [carreras, setCarreras] = useState<string[]>([]); // Estado para almacenar las carreras
+  const [generos, setGeneros] = useState<string[]>([]); // Estado para almacenar los géneros
   const history = useHistory();
 
-  // Lista de carreras para el combo box
-  const carreras = [
-    "Ingeniería en Informática",
-    "Ingeniería en Marketing",
-    "Administración de Empresas",
-    "Contabilidad",
-    "Psicología",
-    "Derecho",
-    "Medicina",
-    "Ingeniería Civil",
-    "Arquitectura",
-    "Diseño Gráfico"
-  ];
+  useEffect(() => {
+    // Cargar carreras y géneros desde Firestore cuando el componente se monta
+    const fetchData = async () => {
+      const carrerasFromFirestore = await getCarreras();
+      setCarreras(carrerasFromFirestore);
+      
+      const generosFromFirestore = await getGeneros();
+      setGeneros(generosFromFirestore);
+    };
+
+    fetchData();
+  }, []);
 
   const handleInputChange = (e: any) => {
     const { name, value } = e.target;
@@ -52,47 +53,23 @@ const RegisterFormGoogle: React.FC = () => {
 
     try {
       const formDataToSubmit = {
-        ...formData,
-        anioEstudio: parseInt(formData.anioEstudio) || 0  // Convierte a número o usa 0 si no es válido
+        nombreCompleto: `${formData.nombre} ${formData.apellido}`,
+        anioEstudio: parseInt(formData.anioEstudio) || 0,
+        carrera: formData.carrera,
+        genero: formData.genero,
+        sedeAcademica: formData.sedeAcademica,
+        fechaNacimiento: formData.fechaNacimiento,
+        fechaRegistro: new Date().toISOString() // Asignar la fecha de registro actual
       };
 
-      const docRef = await addDoc(collection(db, "estudiante"), formDataToSubmit);
-      console.log("Documento escrito con ID: ", docRef.id);
-      
+      const docId = await registerEstudiante(formDataToSubmit);
+      console.log("Estudiante registrado con ID: ", docId);
+
       alert('Datos enviados correctamente');
       history.push('/tarjetas');
     } catch (error) {
       console.error("Error al guardar los datos en Firestore: ", error);
       setFormError('Hubo un problema al enviar los datos. Intente nuevamente.');
-    } finally {
-      setShowLoading(false);
-    }
-  };
-
-  const handleGoogleLogin = async () => {
-    setShowLoading(true);
-    try {
-      const result = await googleLogin();
-      if (result) {
-        const user = auth.currentUser;
-        if (user) {
-          // Almacena la información del usuario en Firestore si es necesario
-          await addDoc(collection(db, "estudiante"), {
-            uid: user.uid,
-            nombre: user.displayName,
-            email: user.email,
-            fotoPerfil: user.photoURL,
-            provider: "google",
-            creadoEn: new Date()
-          });
-
-          alert("Inicio de sesión exitoso");
-          history.push('/tarjetas');
-        }
-      }
-    } catch (error) {
-      console.error("Error al iniciar sesión con Google:", error);
-      setFormError('Error al iniciar sesión con Google');
     } finally {
       setShowLoading(false);
     }
@@ -134,10 +111,21 @@ const RegisterFormGoogle: React.FC = () => {
             name="anioEstudio"
             value={formData.anioEstudio}
             onIonChange={handleInputChange}
-            type="number"  // Asegura que solo se ingresen números
+            type="number"
+          />
+          <IonInput
+            className="input"
+            label="Fecha de Nacimiento"
+            fill="solid"
+            labelPlacement="floating"
+            placeholder="Ingresa tu fecha de nacimiento"
+            name="fechaNacimiento"
+            value={formData.fechaNacimiento}
+            onIonChange={handleInputChange}
+            type="date"
           />
           
-          {/* Combo box para seleccionar una carrera */}
+          {/* Combo box dinámico para las carreras */}
           <IonSelect
             className="input"
             label="Carrera"
@@ -154,20 +142,23 @@ const RegisterFormGoogle: React.FC = () => {
             ))}
           </IonSelect>
 
+          {/* Combo box dinámico para los géneros */}
           <IonSelect
             className="input"
             label="Género"
             labelPlacement="floating"
-            value={formData.genero}
+            placeholder="Selecciona tu género"
             name="genero"
+            value={formData.genero}
             onIonChange={handleInputChange}
           >
-            <IonSelectOption value="masculino">Masculino</IonSelectOption>
-            <IonSelectOption value="femenino">Femenino</IonSelectOption>
-            <IonSelectOption value="otro">Otro</IonSelectOption>
+            {generos.map((genero, index) => (
+              <IonSelectOption key={index} value={genero}>
+                {genero}
+              </IonSelectOption>
+            ))}
           </IonSelect>
 
-          {/* Campo fijo para Sede Académica */}
           <IonInput
             className="input"
             label="Sede Académica"
@@ -182,11 +173,6 @@ const RegisterFormGoogle: React.FC = () => {
           <IonButton fill="clear" className="login-button" onClick={handleFormSubmit}>
             <IonText className="ion-btn-text">Enviar</IonText>
           </IonButton>
-
-          {/* Botón para iniciar sesión con Google */}
-          <IonButton fill="clear" className="login-button" onClick={handleGoogleLogin}>
-            <IonText className="ion-btn-text">Iniciar sesión con Google</IonText>
-          </IonButton>
         </div>
 
         <IonLoading
@@ -200,4 +186,4 @@ const RegisterFormGoogle: React.FC = () => {
   );
 };
 
-export default RegisterFormGoogle;
+export default RegisterForm;

@@ -17,7 +17,7 @@ const Login: React.FC = () => {
 
   const handleLogin = async () => {
     setShowLoading(true);  // Mostrar el loading
-
+    
     let isValid = true;
 
     if (password.length < 6) {
@@ -31,7 +31,7 @@ const Login: React.FC = () => {
       const success = await loginUser(email, password);
       if (success) {
         alert('Inicio de sesión exitoso');
-        history.push('/register-form-google');
+        history.push('/tarjetas'); // Redirige a tarjetas después de inicio de sesión exitoso
       } else {
         setPasswordError('Error en las credenciales de inicio de sesión.');
       }
@@ -45,7 +45,7 @@ const Login: React.FC = () => {
 
     const success = await googleLogin();
     if (success) {
-      history.push('/register-form-google'); // Redirigir al usuario después de iniciar sesión
+      history.push('/tarjetas'); // Redirige a tarjetas después de inicio de sesión exitoso con Google
       alert('Inicio de sesión exitoso');
     } else {
       alert('Error al iniciar sesión con Google');
