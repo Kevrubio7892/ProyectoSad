@@ -26,6 +26,7 @@ const RegisterForm: React.FC = () => {
     genero: '',
     sedeAcademica: 'Duoc UC Puente Alto',
     fechaNacimiento: '',
+    telefono: '',
     email: '',
     contrasena: '',
     confirmContrasena: '',
@@ -108,7 +109,10 @@ const RegisterForm: React.FC = () => {
         genero: formData.genero,
         sedeAcademica: formData.sedeAcademica,
         fechaNacimiento: formData.fechaNacimiento,
-        fechaRegistro: new Date().toISOString()
+        fechaRegistro: new Date().toISOString(),
+        telefono: formData.telefono,
+        email: formData.email,
+        confirmContrasena: formData.contrasena
       };
 
       const docId = await registerEstudiante(formDataToSubmit);
@@ -173,6 +177,18 @@ const RegisterForm: React.FC = () => {
             onIonChange={handleInputChange}
             type="date"
           />
+          <IonInput
+            className="input"
+            label="Teléfono"
+            fill="solid"
+            labelPlacement="floating"
+            placeholder="Ingresa un teléfono"
+            name="telefono" 
+            value={formData.telefono} 
+            onIonChange={handleInputChange}
+            type="tel" 
+          />
+
           <IonInput
             className="input"
             label="Correo electrónico"

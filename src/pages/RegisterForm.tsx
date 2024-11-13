@@ -14,7 +14,9 @@ const RegisterForm: React.FC = () => {
     carrera: '',
     genero: '',
     sedeAcademica: 'Duoc UC Puente Alto', // Valor fijo de la sede
-    fechaNacimiento: '' // Agregar el campo para la fecha de nacimiento
+    fechaNacimiento: '', // Agregar el campo para la fecha de nacimiento
+    email: '',
+    contrasena: ''
   });
   const [formError, setFormError] = useState<string>('');
   const [showLoading, setShowLoading] = useState<boolean>(false);
@@ -59,7 +61,9 @@ const RegisterForm: React.FC = () => {
         genero: formData.genero,
         sedeAcademica: formData.sedeAcademica,
         fechaNacimiento: formData.fechaNacimiento,
-        fechaRegistro: new Date().toISOString() // Asignar la fecha de registro actual
+        fechaRegistro: new Date().toISOString(), // Asignar la fecha de registro actual
+        email: formData.email,
+        contrasena: formData.contrasena
       };
 
       const docId = await registerEstudiante(formDataToSubmit);

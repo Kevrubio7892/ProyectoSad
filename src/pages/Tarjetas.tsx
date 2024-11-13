@@ -14,81 +14,88 @@ import {
   close,
   checkmark,
   heart,
+  logoInstagram,
 } from "ionicons/icons";
 import { createGesture } from "@ionic/react";
-import logo_SAD from "../assets/logo_SAD.png";
-import imageLeia from "../assets/leia.jpg";
-import imageBambi from "../assets/bambi.jpg";
-import LikeAnimation from "../components/LikeAnimation"; // Importa el componente de animación de like
-import CheckAnimation from "../components/CheckAnimation"; // Importa el componente de animación de check
+import { useHistory } from "react-router-dom";
+import { db } from "../firebaseConfig";
+import { collection, getDocs, onSnapshot, query, where } from "firebase/firestore"; // Asegúrate de importar onSnapshot
+import LikeAnimation from "../components/LikeAnimation";
+import CheckAnimation from "../components/CheckAnimation";
 import XAnimation from "../components/XAnimation";
-import { useHistory } from "react-router-dom"; // Importa useHistory
+import logo_SAD from "../assets/logo_SAD.png";
 import "../styles/Tarjetas.css";
 
-interface CardData {
-  id: number;
-  name: string;
-  details: string[];
-  image: string;
+interface Estudiante {
+  id: string;
+  nombreCompleto: string;
+  sedeAcademica: string;
+  fechaNacimiento: string;
+  carrera: string;
+  anioEstudio: number;
+  edad?: number;
+  descripcion: string;
+  instagram?: string;
+  photoUrl?: string; // Campo para la foto de perfil
 }
 
-const data: CardData[] = [
-  {
-    id: 1,
-    name: "José Manuel 22",
-    details: ["Ingeniería Civil", "Deportes", "Conocer personas"],
-    image: imageLeia,
-  },
-  {
-    id: 2,
-    name: "Bambyman",
-    details: ["Técnico en sonido", "Audiovisual", "Weno pal lol"],
-    image: imageBambi,
-  },
-];
+const calcularEdad = (fechaNacimiento: string) => {
+  const nacimiento = new Date(fechaNacimiento);
+  const diferencia = Date.now() - nacimiento.getTime();
+  const edad = new Date(diferencia).getUTCFullYear() - 1970;
+  return edad;
+};
 
 const CardView: React.FC = () => {
+  const [estudiantes, setEstudiantes] = useState<Estudiante[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [showXAnimation, setShowXAnimation] = useState(false); // Estado para la animación de X
-  const [showLikeAnimation, setShowLikeAnimation] = useState(false); // Estado para la animación de like
-  const [showCheckAnimation, setShowCheckAnimation] = useState(false); // Estado para la animación de check
+  const [showXAnimation, setShowXAnimation] = useState(false);
+  const [showLikeAnimation, setShowLikeAnimation] = useState(false);
+  const [showCheckAnimation, setShowCheckAnimation] = useState(false);
   const [showPremiumModal, setShowPremiumModal] = useState(false);
 
   const cardRef = useRef<HTMLDivElement | null>(null);
-  const history = useHistory(); // Inicializa useHistory
+  const history = useHistory();
 
-  const handleSettingsClick = () => {
-    history.push("/opciones"); // Redirige a la página de perfil
-  };
+  useEffect(() => {
+    const fetchEstudiantes = async () => {
+      const estudiantesQuery = query(collection(db, "Estudiantes"));
+      onSnapshot(estudiantesQuery, (snapshot) => {
+        const estudiantesData: Estudiante[] = snapshot.docs.map((doc) => {
+          const data = doc.data() as Omit<Estudiante, "id" | "edad">;
+          const edad = calcularEdad(data.fechaNacimiento);
+          return { id: doc.id, ...data, edad };
+        });
+        setEstudiantes(estudiantesData);
+      });
+    };
+    fetchEstudiantes();
+  }, []);
 
   const handleSwipe = (direction: number) => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % data.length);
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % estudiantes.length);
+  };
+
+  const handleSettingsClick = () => {
+    history.push("/opciones");
   };
 
   const handleXClick = () => {
-    setShowXAnimation(true); // Mostrar la animación al hacer clic en el X
+    setShowXAnimation(true);
   };
 
   const handleLikeClick = () => {
-    setShowLikeAnimation(true); // Mostrar la animación al hacer clic en el corazón
+    setShowLikeAnimation(true);
     setShowPremiumModal(true);
   };
 
   const handleCheckClick = () => {
-    setShowCheckAnimation(true); // Mostrar la animación al hacer clic en el check
+    setShowCheckAnimation(true);
   };
 
-  const handleXAnimationComplete = () => {
-    setShowXAnimation(false); // Ocultar la animación de X al completarse
-  };
-
-  const handleLikeAnimationComplete = () => {
-    setShowLikeAnimation(false); // Ocultar la animación de like al completarse
-  };
-
-  const handleCheckAnimationComplete = () => {
-    setShowCheckAnimation(false); // Ocultar la animación de check al completarse
-  };
+  const handleXAnimationComplete = () => setShowXAnimation(false);
+  const handleLikeAnimationComplete = () => setShowLikeAnimation(false);
+  const handleCheckAnimationComplete = () => setShowCheckAnimation(false);
 
   useEffect(() => {
     if (cardRef.current) {
@@ -98,33 +105,27 @@ const CardView: React.FC = () => {
         direction: "x",
         onStart: () => {
           if (cardRef.current) {
-            cardRef.current.style.transition = "none"; // Desactiva la transición al iniciar el gesto
+            cardRef.current.style.transition = "none";
           }
         },
         onMove: (ev) => {
-          // Mover la tarjeta según el gesto
           if (cardRef.current) {
             cardRef.current.style.transform = `translate(${ev.deltaX}px, ${ev.deltaY}px)`;
           }
         },
         onEnd: (ev) => {
           const deltaX = ev.deltaX;
-          const deltaY = ev.deltaY;
           const direction = deltaX > 0 ? 1 : -1;
 
-          // Deslizar a la izquierda para pasar a la siguiente carta
           if (deltaX < -150) {
             handleSwipe(direction);
             if (cardRef.current) {
               cardRef.current.style.transition = "transform 0.3s ease-out";
-              cardRef.current.style.transform = `translateX(-500px)`; // Desplazar a la izquierda
+              cardRef.current.style.transform = `translateX(-500px)`;
             }
-          } else {
-            // Regresar la tarjeta a su posición original si no se desliza suficiente
-            if (cardRef.current) {
-              cardRef.current.style.transition = "transform 0.3s ease-out";
-              cardRef.current.style.transform = "translate(0, 0)"; // Regresar a la posición original
-            }
+          } else if (cardRef.current) {
+            cardRef.current.style.transition = "transform 0.3s ease-out";
+            cardRef.current.style.transform = "translate(0, 0)";
           }
         },
       });
@@ -139,8 +140,6 @@ const CardView: React.FC = () => {
       <IonHeader className="header">
         <IonButtons slot="start">
           <IonButton color="light" onClick={handleSettingsClick}>
-            {" "}
-            {/* Asocia el evento */}
             <IonIcon icon={settingsOutline} size="large" />
           </IonButton>
         </IonButtons>
@@ -152,86 +151,71 @@ const CardView: React.FC = () => {
         </IonButtons>
       </IonHeader>
       <IonContent fullscreen className="content">
-        {currentIndex < data.length && (
+        {currentIndex < estudiantes.length && (
           <div ref={cardRef} id="card" className="card">
+            {/* Background image for the entire card */}
             <img
-              src={data[currentIndex].image}
-              alt={data[currentIndex].name}
+              src={estudiantes[currentIndex].photoUrl || "https://via.placeholder.com/150"}
+              alt="Profile"
               className="card-image"
             />
             <div className="info-container">
-              <h2 className="name-text">{data[currentIndex].name}</h2>
-              {data[currentIndex].details.map((detail, index) => (
-                <p key={index} className="detail-text">
-                  {detail}
-                </p>
-              ))}
+              
+              <h2 className="name-text">
+                {estudiantes[currentIndex].nombreCompleto} {estudiantes[currentIndex].edad}
+              </h2>
+              <p className="detail-text">Estudiando {estudiantes[currentIndex].carrera} 📕</p>
+              <p className="detail-text">Año Estudio: {estudiantes[currentIndex].anioEstudio} 📅</p>
+              <p className="detail-text">{estudiantes[currentIndex].sedeAcademica} 🏫</p>
+              <p className="desc-text">{estudiantes[currentIndex].descripcion}</p>
+
+              {/* Icono de Instagram en la esquina si la URL existe */}
+              {estudiantes[currentIndex].instagram && (
+                <a
+                  href={estudiantes[currentIndex].instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="instagram-icon"
+                >
+                  <IonIcon icon={logoInstagram} size="large" />
+                </a>
+              )}
             </div>
           </div>
         )}
+
         <div className="button-container">
-          <IonButton
-            className="icon-button-x"
-            fill="clear"
-            color="light"
-            onClick={handleXClick}
-          >
+          <IonButton className="icon-button-x" fill="clear" color="light" onClick={handleXClick}>
             <IonIcon icon={close} size="large" />
           </IonButton>
-          <IonButton
-            className="icon-button-check"
-            fill="clear"
-            color="light"
-            onClick={() => {
-              handleSwipe(1);
-              handleCheckClick();
-            }}
-          >
+          <IonButton className="icon-button-check" fill="clear" color="light" onClick={() => handleSwipe(1)}>
             <IonIcon icon={checkmark} size="large" />
           </IonButton>
-          <IonButton
-            className="icon-button-heart"
-            fill="clear"
-            color="light"
-            onClick={handleLikeClick}
-          >
+          <IonButton className="icon-button-heart" fill="clear" color="light" onClick={handleLikeClick}>
             <IonIcon icon={heart} size="large" />
           </IonButton>
         </div>
         {showPremiumModal && (
-        <IonModal
-          isOpen={showPremiumModal}
-          onDidDismiss={() => setShowPremiumModal(false)}
-          className="premium-modal" // Clase personalizada
+          <IonModal
+            isOpen={showPremiumModal}
+            onDidDismiss={() => setShowPremiumModal(false)}
+            className="premium-modal"
           >
-          <div className="modal-content">
-            <h1 className="modal-title">¡CAMBIATE A PREMIUM!</h1>
-            <p className="modal-description">Da super likes o reparte likes ilimitados.</p>
-            <p className="modal-instruction">Presiona el botón para dirigirte al pago.</p>
-            <IonButton onClick={() => setShowPremiumModal(false)} expand="block" className="ion-button-premium">
-              Pasarme a premium
-            </IonButton>
-            <IonButton
-              onClick={() => setShowPremiumModal(false)}
-              expand="block"           
-              className="ion-button-cancelar"
-            >
-              Cancelar
-            </IonButton>
-          </div>
-        </IonModal>
-      )}
-
-        {showXAnimation && <XAnimation onComplete={handleXAnimationComplete} />}{" "}
-        {/* Mostrar animación de X */}
-        {showLikeAnimation && (
-          <LikeAnimation onComplete={handleLikeAnimationComplete} />
-        )}{" "}
-        {/* Mostrar animación de like */}
-        {showCheckAnimation && (
-          <CheckAnimation onComplete={handleCheckAnimationComplete} />
-        )}{" "}
-        {/* Mostrar animación de check */}
+            <div className="modal-content">
+              <h1 className="modal-title">¡CAMBIATE A PREMIUM!</h1>
+              <p className="modal-description">Da super likes o reparte likes ilimitados.</p>
+              <IonButton onClick={() => setShowPremiumModal(false)} expand="block" className="ion-button-premium">
+                Pasarme a premium
+              </IonButton>
+              <IonButton onClick={() => setShowPremiumModal(false)} expand="block" className="ion-button-cancelar">
+                Cancelar
+              </IonButton>
+            </div>
+          </IonModal>
+        )}
+        {showXAnimation && <XAnimation onComplete={handleXAnimationComplete} />}
+        {showLikeAnimation && <LikeAnimation onComplete={handleLikeAnimationComplete} />}
+        {showCheckAnimation && <CheckAnimation onComplete={handleCheckAnimationComplete} />}
       </IonContent>
     </IonPage>
   );

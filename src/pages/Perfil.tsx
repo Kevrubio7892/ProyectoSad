@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   IonPage,
   IonHeader,
@@ -12,17 +12,20 @@ import {
   IonInput,
   IonButton,
   IonActionSheet,
-  IonIcon
-} from '@ionic/react';
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { camera } from 'ionicons/icons';
-import '../styles/Perfil.css';  // Importamos el archivo CSS
+  IonIcon,
+} from "@ionic/react";
+import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
+import { camera } from "ionicons/icons";
+import { onAuthStateChanged } from "firebase/auth";
+import { getUserData, auth, updateProfilePhoto } from "../firebaseConfig";
+import "../styles/Perfil.css";
 
 const ProfilePage = () => {
-  const [phoneNumber, setPhoneNumber] = useState("+569 30597502");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [showActionSheet, setShowActionSheet] = useState(false);
-  const [profilePhoto, setProfilePhoto] = useState("https://image.europafm.com/clipping/cmsimages01/2022/09/28/2FAC71CF-4762-49D3-AA69-B1154B85D5D1/maria-becerra_104.jpg?crop=2457,2457,x476,y0&width=1200&height=1200&optimize=low&format=webply");
+  const [profilePhoto, setProfilePhoto] = useState("");
+  const [userData, setUserData] = useState<any>(null);
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
@@ -37,9 +40,11 @@ const ProfilePage = () => {
       quality: 90,
       allowEditing: false,
       resultType: CameraResultType.DataUrl,
-      source: CameraSource.Camera
+      source: CameraSource.Camera,
     });
-    setProfilePhoto(image.dataUrl || "");
+    const photoDataUrl = image.dataUrl || "";
+    setProfilePhoto(photoDataUrl); // Muestra la foto en la interfaz de usuario
+    await updateProfilePhoto(userData.email, photoDataUrl); // Guarda la foto en Firestore
     setShowActionSheet(false);
   };
 
@@ -48,11 +53,27 @@ const ProfilePage = () => {
       quality: 90,
       allowEditing: false,
       resultType: CameraResultType.DataUrl,
-      source: CameraSource.Photos
+      source: CameraSource.Photos,
     });
-    setProfilePhoto(image.dataUrl || "");
+    const photoDataUrl = image.dataUrl || "";
+    setProfilePhoto(photoDataUrl); // Muestra la foto en la interfaz de usuario
+    await updateProfilePhoto(userData.email, photoDataUrl); // Guarda la foto en Firestore
     setShowActionSheet(false);
   };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user && user.email) {
+        const data = await getUserData(user.email);
+        if (data) {
+          setUserData(data);
+          setPhoneNumber(data.telefono || "");
+          setProfilePhoto(data.photoUrl || "https://via.placeholder.com/150"); // Muestra la foto si existe en Firestore
+        }
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   return (
     <IonPage>
@@ -77,8 +98,8 @@ const ProfilePage = () => {
             className="camera-icon"
             onClick={() => setShowActionSheet(true)}
           />
-          <h2 className="profile-name">Jenny Nails</h2>
-          <p className="profile-role">Técnico veterinario</p>
+          <h2 className="profile-name">{userData?.nombreCompleto || "Nombre del Usuario"}</h2>
+          <p className="profile-role">{userData?.carrera || "Carrera"}</p>
         </div>
 
         <IonItem >
@@ -86,36 +107,38 @@ const ProfilePage = () => {
         </IonItem>
         <hr />
 
-
         <IonItem className="personal-info-item">
           <IonLabel>Nombre:</IonLabel>
-          <p>María de los Ángeles Becerra</p>
+          <p>{userData?.nombreCompleto || "Nombre del Usuario"}</p>
         </IonItem>
 
         <IonItem className="personal-info-item">
           <IonLabel>Correo:</IonLabel>
-          <p>Mar.Becerra@duacap.cl</p>
+          <p>{userData?.email || "Correo no disponible"}</p>
         </IonItem>
 
         <IonItem className="personal-info-item">
           <IonLabel>Carrera:</IonLabel>
-          <p>Técnico Enfermería</p>
+          <p>{userData?.carrera || "Carrera no disponible"}</p>
         </IonItem>
-
 
         <IonItem className="personal-info-item">
           <IonLabel>Número:</IonLabel>
           {isEditing ? (
             <IonInput value={phoneNumber} onIonChange={handlePhoneChange} />
           ) : (
-            <p>{phoneNumber}</p>
+            <p>{phoneNumber || "Número no disponible"}</p>
           )}
         </IonItem>
-
+        
+        <IonItem className="personal-info-item">
+          <IonLabel>Género:</IonLabel>
+          <p>{userData?.genero || "Género no disponible"}</p>
+        </IonItem>
+        
         <IonButton expand="block" onClick={handleEditToggle} className="edit-button">
           {isEditing ? "Guardar" : "Editar"}
         </IonButton>
-
 
         <IonActionSheet
           isOpen={showActionSheet}

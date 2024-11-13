@@ -76,17 +76,20 @@
   
   .button-container {
     display: flex; /* Flexbox para disposición horizontal */
-    justify-content: center; /* Centra los botones horizontalmente */
+    align-items: center; /* Centra los botones horizontalmente */
     width: 50%; /* Ajusta según sea necesario */
-    margin: 20px auto; /* Usa auto para centrar el contenedor en el padre */
-  }
-  
-  .icon-button {
+    margin: auto;
+    gap: 1px; /* Ajusta el espacio entre los iconos aquí */
+}
+
+.icon-button {
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 1px;
-  }
+    margin: 0; /* Asegúrate de que no haya margen adicional */
+}
+
   
   .forgot-password-text {
     color: #FFFFFF;

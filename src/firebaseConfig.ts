@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
-
+import { collection, getDocs, query, where, updateDoc} from "firebase/firestore";
 const config = {
   apiKey: "AIzaSyBjdhCSMelJZCYJU-Ky6dwNdSSOTejBp6Y",
   authDomain: "prueba-aa0db.firebaseapp.com",
@@ -58,19 +58,93 @@ export async function registerUser(username: string, password: string) {
 }
 
 // Obtener datos del usuario desde Firestore
-export async function getUserData(uid: string) {
+export const getUserData = async (userEmail: string) => {
   try {
-    const docRef = doc(db, "Estudiantes", uid);
-    const docSnap = await getDoc(docRef);
+    const estudiantesRef = collection(db, "Estudiantes");
+    const q = query(estudiantesRef, where("email", "==", userEmail));
+    const querySnapshot = await getDocs(q);
 
-    if (docSnap.exists()) {
-      return docSnap.data();
+    if (!querySnapshot.empty) {
+      const userDoc = querySnapshot.docs[0]; // Toma el primer documento que coincida
+      return userDoc.data();
     } else {
-      console.error("No se encontró el documento");
-      return null;
+      console.error("No se encontraron datos para el email:", userEmail);
     }
   } catch (error) {
     console.error("Error al obtener datos del usuario:", error);
-    return null;
   }
-}
+  return null;
+};
+
+// Actualiza la descripción del usuario
+export const updateUserDescription = async (userEmail: string, newDescription: string) => {
+  try {
+    const estudiantesRef = collection(db, "Estudiantes");
+    const q = query(estudiantesRef, where("email", "==", userEmail));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const userDoc = querySnapshot.docs[0]; // Toma el primer documento que coincida
+      const userDocRef = userDoc.ref;
+      
+      // Actualiza el campo 'descripcion' en Firestore
+      await updateDoc(userDocRef, {
+        descripcion: newDescription,
+      });
+      console.log("Descripción actualizada correctamente.");
+    } else {
+      console.error("No se encontró el documento para este usuario.");
+    }
+  } catch (error) {
+    console.error("Error al actualizar la descripción:", error);
+  }
+};
+
+// Actualiza la URL de Instagram del usuario
+export const updateInstagramUrl = async (userEmail: string, instagramUrl: string) => {
+  try {
+    const estudiantesRef = collection(db, "Estudiantes");
+    const q = query(estudiantesRef, where("email", "==", userEmail));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const userDoc = querySnapshot.docs[0]; // Toma el primer documento que coincida
+      const userDocRef = userDoc.ref;
+
+      // Actualiza el campo 'instagram' en Firestore
+      await updateDoc(userDocRef, {
+        instagram: instagramUrl,
+      });
+      console.log("URL de Instagram actualizada correctamente.");
+    } else {
+      console.error("No se encontró el documento para este usuario.");
+    }
+  } catch (error) {
+    console.error("Error al actualizar la URL de Instagram:", error);
+  }
+};
+
+// Actualiza la foto de perfil del usuario en Firestore
+export const updateProfilePhoto = async (userEmail: string, photoDataUrl: string) => {
+  try {
+    const estudiantesRef = collection(db, "Estudiantes");
+    const q = query(estudiantesRef, where("email", "==", userEmail));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const userDoc = querySnapshot.docs[0]; // Toma el primer documento que coincida
+      const userDocRef = userDoc.ref;
+
+      // Actualiza el campo 'photoUrl' en Firestore
+      await updateDoc(userDocRef, {
+        photoUrl: photoDataUrl, // Guarda la imagen en formato base64
+      });
+      console.log("Foto de perfil actualizada correctamente en Firestore.");
+    } else {
+      console.error("No se encontró el documento para este usuario.");
+    }
+  } catch (error) {
+    console.error("Error al actualizar la foto de perfil:", error);
+  }
+};
+

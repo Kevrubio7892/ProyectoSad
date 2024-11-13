@@ -54,10 +54,6 @@ const Login: React.FC = () => {
     setShowLoading(false);  // Ocultar el loading al terminar
   };
 
-  const handleAppleLogin = () => {
-    console.log('Iniciar sesión con Apple');
-  };
-
   const handlePhoneLogin = () => {
     console.log('Iniciar sesión con el teléfono');
   };
@@ -103,10 +99,6 @@ const Login: React.FC = () => {
         </IonButton>
 
         <div className="button-container">
-          <IonButton fill="clear" className="icon-button" onClick={handleAppleLogin}>
-            <IonIcon icon={logoApple} size="large" color="light" />
-          </IonButton>
-
           <IonButton fill="clear" className="icon-button" onClick={handleGoogleLogin}>
             <IonIcon icon={logoGoogle} size="large" color="light" />
           </IonButton>
