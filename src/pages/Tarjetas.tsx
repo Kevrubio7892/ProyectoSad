@@ -18,13 +18,13 @@ import {
 } from "ionicons/icons";
 import { createGesture } from "@ionic/react";
 import { useHistory } from "react-router-dom";
-import { db } from "../firebaseConfig";
+import { db, auth, addLike, addDislike} from "../firebaseConfig";
 import { collection, getDocs, onSnapshot, query, where } from "firebase/firestore"; // Asegúrate de importar onSnapshot
 import LikeAnimation from "../components/LikeAnimation";
 import CheckAnimation from "../components/CheckAnimation";
 import XAnimation from "../components/XAnimation";
 import logo_SAD from "../assets/logo_SAD.png";
-import "../styles/Tarjetas.css";
+import "../styles/TarjetasStyles.css";
 
 interface Estudiante {
   id: string;
@@ -74,14 +74,34 @@ const CardView: React.FC = () => {
 
   const handleSwipe = (direction: number) => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % estudiantes.length);
+    
   };
 
   const handleSettingsClick = () => {
     history.push("/opciones");
   };
 
-  const handleXClick = () => {
+  const handleChatsClick = () => {
+    history.push("/chats");
+  };
+
+  const handleDislikeClick = async () => {
     setShowXAnimation(true);
+  
+    if (estudiantes[currentIndex]) {
+      const toUserId = estudiantes[currentIndex].id; // ID del estudiante que recibe el Check
+      const fromUserId = auth.currentUser?.uid; // ID del usuario actual (quien da el Check)
+  
+      if (fromUserId && toUserId) {
+        await addDislike(fromUserId, toUserId); // Registra el Check en Firestore
+      } else {
+        console.error("Faltan IDs para registrar el Check.");
+      }
+    }
+  
+    setTimeout(() => {
+      handleSwipe(1); // Cambia a la siguiente tarjeta después de la animación
+    }, 500); // Asegúrate de que este tiempo coincide con la duración de la animación
   };
 
   const handleLikeClick = () => {
@@ -89,9 +109,27 @@ const CardView: React.FC = () => {
     setShowPremiumModal(true);
   };
 
-  const handleCheckClick = () => {
+  const handleCheckClick = async () => {
     setShowCheckAnimation(true);
+  
+    if (estudiantes[currentIndex]) {
+      const toUserId = estudiantes[currentIndex].id; // ID del estudiante que recibe el Check
+      const fromUserId = auth.currentUser?.uid; // ID del usuario actual (quien da el Check)
+  
+      if (fromUserId && toUserId) {
+        await addLike(fromUserId, toUserId); // Registra el Check en Firestore
+      } else {
+        console.error("Faltan IDs para registrar el Check.");
+      }
+    }
+  
+    setTimeout(() => {
+      handleSwipe(1); // Cambia a la siguiente tarjeta después de la animación
+    }, 500); // Asegúrate de que este tiempo coincide con la duración de la animación
   };
+  
+  
+  
 
   const handleXAnimationComplete = () => setShowXAnimation(false);
   const handleLikeAnimationComplete = () => setShowLikeAnimation(false);
@@ -145,7 +183,7 @@ const CardView: React.FC = () => {
         </IonButtons>
         <img src={logo_SAD} alt="Logo SAD" className="logo" />
         <IonButtons slot="end">
-          <IonButton color="light">
+          <IonButton color="light" onClick={handleChatsClick}>
             <IonIcon icon={chatbubbleEllipsesOutline} size="large" />
           </IonButton>
         </IonButtons>
@@ -185,10 +223,10 @@ const CardView: React.FC = () => {
         )}
 
         <div className="button-container">
-          <IonButton className="icon-button-x" fill="clear" color="light" onClick={handleXClick}>
+          <IonButton className="icon-button-x" fill="clear" color="light" onClick={handleDislikeClick}>
             <IonIcon icon={close} size="large" />
           </IonButton>
-          <IonButton className="icon-button-check" fill="clear" color="light" onClick={() => handleSwipe(1)}>
+          <IonButton className="icon-button-check" fill="clear" color="light" onClick={handleCheckClick}>
             <IonIcon icon={checkmark} size="large" />
           </IonButton>
           <IonButton className="icon-button-heart" fill="clear" color="light" onClick={handleLikeClick}>
@@ -202,7 +240,7 @@ const CardView: React.FC = () => {
             className="premium-modal"
           >
             <div className="modal-content">
-              <h1 className="modal-title">¡CAMBIATE A PREMIUM!</h1>
+              <h1 className="modal-title">¡PRONTO ESTARÁ DISPONIBLE EL PLAN PREMIUM!</h1>
               <p className="modal-description">Da super likes o reparte likes ilimitados.</p>
               <IonButton onClick={() => setShowPremiumModal(false)} expand="block" className="ion-button-premium">
                 Pasarme a premium

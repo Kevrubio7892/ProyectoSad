@@ -1,6 +1,6 @@
 // LikeAnimation.tsx
 import React, { useEffect } from 'react';
-import '../styles/LikeAnimation.css';// Asegúrate de crear este archivo CSS
+import '../styles/LikeAnimationStyles.css';// Asegúrate de crear este archivo CSS
 
 const LikeAnimation: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
   useEffect(() => {

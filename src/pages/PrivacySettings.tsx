@@ -15,7 +15,7 @@ import {
   IonAvatar
 } from '@ionic/react';
 import { callOutline, locationOutline, eyeOffOutline } from 'ionicons/icons';
-import '../styles/PrivacySettings.css';
+import '../styles/PrivacySettingsStyles.css';
 
 const PrivacySettings = () => {
   const getInitialToggleState = (key: string, defaultValue: boolean) => {

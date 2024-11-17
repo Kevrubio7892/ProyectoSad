@@ -11,7 +11,7 @@ import {
   IonLoading 
 } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
-import '../styles/Login.css';
+import '../styles/LoginStyles.css';
 import logo from '../assets/logo.png';
 import logo_SAD from '../assets/logo_SAD.png';
 import { registerUser } from '../firebaseConfig'; // Para autenticación en Firebase
@@ -132,7 +132,7 @@ const RegisterForm: React.FC = () => {
     <IonPage>
       <IonContent className="login-content" fullscreen>
         <IonImg src={logo} className="background-logo" />
-        <IonImg src={logo_SAD} className="background-logo-sad" />
+        <IonImg src={logo_SAD} className="bg-logo-sad-reg" />
 
         <div className="form-container">
           <IonInput

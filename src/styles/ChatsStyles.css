@@ -1,0 +1,14 @@
+/* MessageList.css */
+.message-sender {
+    font-weight: bold;
+  }
+  
+  .message-text {
+    color: #666;
+  }
+  
+  .message-status {
+    color: #4caf50;
+    font-size: 1.2rem;
+  }
+  

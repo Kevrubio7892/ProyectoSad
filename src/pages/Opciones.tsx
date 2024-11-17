@@ -26,7 +26,7 @@ import {
 import { useHistory } from "react-router";
 import { onAuthStateChanged } from "firebase/auth";
 import { getUserData, auth, updateUserDescription, updateInstagramUrl } from "../firebaseConfig";
-import "../styles/Opciones.css";
+import "../styles/OpcionesStyles.css";
 
 const SettingsPage: React.FC = () => {
   const [description, setDescription] = useState("");

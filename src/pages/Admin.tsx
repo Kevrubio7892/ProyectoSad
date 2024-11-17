@@ -15,7 +15,7 @@ import {
 import { logOut, person } from 'ionicons/icons';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
-import '../styles/Admin.css';
+import '../styles/AdminStyles.css';
 
 const AdminPage: React.FC = () => {
   const [showLogoutAlert, setShowLogoutAlert] = React.useState(false);

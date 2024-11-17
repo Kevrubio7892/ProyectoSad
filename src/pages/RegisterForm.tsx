@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { IonPage, IonContent, IonButton, IonInput, IonSelect, IonSelectOption, IonText, IonImg, IonLoading } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
-import '../styles/Login.css';
+import '../styles/LoginStyles.css';
 import logo from '../assets/logo.png';
 import logo_SAD from '../assets/logo_SAD.png';
 import { registerEstudiante, getCarreras, getGeneros } from '../services/FireStoreServices';

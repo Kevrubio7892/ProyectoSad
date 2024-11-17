@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { IonPage, IonContent, IonButton, IonInput, IonText, IonIcon, IonImg, IonLoading } from '@ionic/react';
 import { logoGoogle, logoApple, callOutline } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
-import '../styles/Login.css';
+import '../styles/LoginStyles.css';
 import logo from '../assets/logo.png';
 import logo_SAD from '../assets/logo_SAD.png';
 import { loginUser, googleLogin } from '../firebaseConfig';

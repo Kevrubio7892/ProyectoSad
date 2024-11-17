@@ -15,7 +15,7 @@ import RegistarFormGoogle from "./pages/RegisterFormGoogle";
 import CarreraSetup from "./pages/CarreraSetup"; // Importa el componente temporal
 import GeneroSetup from "./pages/GeneroSetup"; // Importa el componente temporal
 import KhipuPayment from "./components/KhipuPayments"; // Importa el componente de Khipu
-
+import Chats from "./pages/Chats"
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
 
@@ -73,6 +73,9 @@ const App: React.FC = () => (
         </Route>
         <Route exact path="/register-form-google">
           <RegistarFormGoogle />
+        </Route>
+        <Route exact path="/chats">
+          <Chats />
         </Route>
         <Route exact path="/cargar-carreras">
           <CarreraSetup />

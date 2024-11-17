@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { getFirestore, doc, addDoc, Timestamp} from "firebase/firestore";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 import { collection, getDocs, query, where, updateDoc} from "firebase/firestore";
@@ -148,3 +148,42 @@ export const updateProfilePhoto = async (userEmail: string, photoDataUrl: string
   }
 };
 
+export const addLike = async (fromUserId: string, toUserId: string) => {
+  try {
+    // Referencia a la subcolección LIKES del estudiante que recibe el Check
+    const likesCollectionRef = collection(db, "Estudiantes", toUserId, "LIKES");
+
+    // Crear el documento del like 
+    const likeData = {
+      fromUserId,
+      toUserId,
+      isSuperLike: false, //
+      timestamp: Timestamp.now(),
+    };
+
+    await addDoc(likesCollectionRef, likeData);
+    console.log("Like registrado correctamente:", likeData);
+  } catch (error) {
+    console.error("Error al registrar el like:", error);
+  }
+};
+
+export const addDislike = async (fromUserId: string, toUserId: string) => {
+  try {
+    // Referencia a la subcolección LIKES del estudiante que recibe el Check
+    const DislikesCollectionRef = collection(db, "Estudiantes", toUserId, "DISLIKES");
+
+    
+    const DislikeData = {
+      fromUserId,
+      toUserId,
+      isSuperLike: false, //
+      timestamp: Timestamp.now(),
+    };
+
+    await addDoc(DislikesCollectionRef, DislikeData);
+    console.log("Dislike registrado correctamente:", DislikeData);
+  } catch (error) {
+    console.error("Error al registrar el dislike:", error);
+  }
+};

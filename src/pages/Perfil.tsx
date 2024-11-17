@@ -18,7 +18,7 @@ import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import { camera } from "ionicons/icons";
 import { onAuthStateChanged } from "firebase/auth";
 import { getUserData, auth, updateProfilePhoto } from "../firebaseConfig";
-import "../styles/Perfil.css";
+import "../styles/PerfilStyles.css";
 
 const ProfilePage = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
