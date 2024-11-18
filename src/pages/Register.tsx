@@ -16,7 +16,7 @@ import logo from '../assets/logo.png';
 import logo_SAD from '../assets/logo_SAD.png';
 import { registerUser } from '../firebaseConfig'; // Para autenticación en Firebase
 import { registerEstudiante, getCarreras, getGeneros } from '../services/FireStoreServices';
-
+import { getAuth, fetchSignInMethodsForEmail } from "firebase/auth";
 const RegisterForm: React.FC = () => {
   const [formData, setFormData] = useState({
     nombre: '',
@@ -56,37 +56,62 @@ const RegisterForm: React.FC = () => {
     }));
   };
 
-  const validateForm = () => {
-    const { email, contrasena, confirmContrasena } = formData;
+  const validateForm = async () => {
+    const { email, contrasena, confirmContrasena, ...otherFields } = formData;
     let isValid = true;
-
-    // Validar campos vacíos
-    if (Object.values(formData).some((value) => value === '')) {
-      setFormError('Por favor, complete todos los campos');
-      isValid = false;
+  
+    // Validar que ningún campo quede vacío
+    for (const [key, value] of Object.entries({ ...otherFields, email, contrasena, confirmContrasena })) {
+      if (value.trim() === '') {
+        setFormError(`El campo ${key} no puede estar vacío.`);
+        isValid = false;
+        return isValid; // Salir en cuanto encuentre un campo vacío
+      }
     }
-    
-    // Validar formato de correo
+  
+    // Validar formato de correo (estándar)
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email) || !email.endsWith('@duacap.cl')) {
-      setFormError('El correo debe ser válido y tener el dominio @duacap.cl');
+    if (!emailRegex.test(email)) {
+      setFormError('Por favor, ingrese un correo electrónico válido.');
       isValid = false;
+      return isValid;
     }
-
-    // Validar contraseña
-    if (contrasena.length < 6) {
-      setFormError('La contraseña debe tener al menos 6 caracteres');
+  
+    // Verificar si el correo ya está registrado
+    const auth = getAuth();
+    try {
+      const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+      if (signInMethods.length > 0) {
+        setFormError('El correo ya está registrado en la aplicación.');
+        isValid = false;
+        return isValid;
+      }
+    } catch (error) {
+      console.error("Error al verificar el correo: ", error);
+      setFormError('Hubo un problema al verificar el correo. Intente nuevamente.');
       isValid = false;
+      return isValid;
     }
-
+  
+    // Validar contraseña (mínimo 8 caracteres, al menos una letra y un número)
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    if (!passwordRegex.test(contrasena)) {
+      setFormError('La contraseña debe tener al menos 8 caracteres, incluir al menos una letra y un número.');
+      isValid = false;
+      return isValid;
+    }
+  
     // Validar confirmación de contraseña
     if (contrasena !== confirmContrasena) {
       setFormError('Las contraseñas no coinciden');
       isValid = false;
+      return isValid;
     }
-
+  
     return isValid;
   };
+  
+  
 
   const handleFormSubmit = async () => {
     if (!validateForm()) return;
@@ -205,7 +230,7 @@ const RegisterForm: React.FC = () => {
             label="Contraseña"
             fill="solid"
             labelPlacement="floating"
-            placeholder="Ingresa una contraseña"
+            placeholder="Mínimo 8 caracteres, al menos una letra y un número"
             name="contrasena"
             value={formData.contrasena}
             onIonChange={handleInputChange}
