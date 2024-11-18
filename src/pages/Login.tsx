@@ -41,18 +41,24 @@ const Login: React.FC = () => {
   };
 
   const handleGoogleLogin = async () => {
-    setShowLoading(true);  // Mostrar el loading
-
-    const success = await googleLogin();
-    if (success) {
-      history.push('/tarjetas'); // Redirige a tarjetas después de inicio de sesión exitoso con Google
+    setShowLoading(true); // Mostrar el loading
+  
+    const result = await googleLogin();
+    if (result.success) {
+      const email = result.email;
+      // Redirige al formulario con la dirección de correo electrónico
+      history.push({
+        pathname: '/register-form-google',
+        state: { email }, // Pasa el email como estado a la vista de registro
+      });
       alert('Inicio de sesión exitoso');
     } else {
       alert('Error al iniciar sesión con Google');
     }
-
-    setShowLoading(false);  // Ocultar el loading al terminar
+  
+    setShowLoading(false); // Ocultar el loading al terminar
   };
+  
 
   const handlePhoneLogin = () => {
     console.log('Iniciar sesión con el teléfono');
@@ -119,12 +125,12 @@ const Login: React.FC = () => {
 
         <div className="forgot-password-text">
           <IonText
-            className="forgot-password-text"
-            onClick={() => history.push('/notificaciones')}
-            color="primary"
-            style={{ cursor: 'pointer' }}
+          className="forgot-password-text"
+          onClick={() => history.push('/forgot-password')}
+          color="primary"
+          style={{ cursor: 'pointer' }}
           >
-            ¿Olvidaste tu contraseña?
+          ¿Olvidaste tu contraseña?
           </IonText>
         </div>
 

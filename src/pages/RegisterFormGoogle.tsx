@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { IonPage, IonContent, IonButton, IonInput, IonSelect, IonSelectOption, IonText, IonImg, IonLoading } from '@ionic/react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import '../styles/LoginStyles.css';
 import logo from '../assets/logo.png';
 import logo_SAD from '../assets/logo_SAD.png';
-import { registerEstudiante, getCarreras, getGeneros } from '../services/FireStoreServices';
+import { collection, query, where, getDocs, updateDoc } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
+import { getCarreras, getGeneros } from '../services/FireStoreServices';
 
 const RegisterForm: React.FC = () => {
+  const location = useLocation<{ email: string }>();
+  const email = location.state?.email || ''; // Recuperar el correo electrónico del estado
   const [formData, setFormData] = useState({
-    nombre: '',
-    apellido: '',
+    telefono: '',
     anioEstudio: '',
     carrera: '',
     genero: '',
     sedeAcademica: 'Duoc UC Puente Alto', // Valor fijo de la sede
-    fechaNacimiento: '' // Agregar el campo para la fecha de nacimiento
+    fechaNacimiento: '', // Campo para la fecha de nacimiento
   });
   const [formError, setFormError] = useState<string>('');
   const [showLoading, setShowLoading] = useState<boolean>(false);
@@ -27,7 +30,7 @@ const RegisterForm: React.FC = () => {
     const fetchData = async () => {
       const carrerasFromFirestore = await getCarreras();
       setCarreras(carrerasFromFirestore);
-      
+
       const generosFromFirestore = await getGeneros();
       setGeneros(generosFromFirestore);
     };
@@ -52,23 +55,32 @@ const RegisterForm: React.FC = () => {
     setShowLoading(true);
 
     try {
-      const formDataToSubmit = {
-        nombreCompleto: `${formData.nombre} ${formData.apellido}`,
-        anioEstudio: parseInt(formData.anioEstudio) || 0,
-        carrera: formData.carrera,
-        genero: formData.genero,
-        sedeAcademica: formData.sedeAcademica,
-        fechaNacimiento: formData.fechaNacimiento,
-        fechaRegistro: new Date().toISOString() // Asignar la fecha de registro actual
-      };
+      // Buscar el documento del usuario en Firestore basado en el correo electrónico
+      const estudiantesRef = collection(db, "Estudiantes");
+      const q = query(estudiantesRef, where("email", "==", email));
+      const querySnapshot = await getDocs(q);
 
-      const docId = await registerEstudiante(formDataToSubmit);
-      console.log("Estudiante registrado con ID: ", docId);
+      if (!querySnapshot.empty) {
+        const userDoc = querySnapshot.docs[0];
+        const userDocRef = userDoc.ref;
 
-      alert('Datos enviados correctamente');
-      history.push('/tarjetas');
+        // Actualizar el documento existente con los datos del formulario
+        await updateDoc(userDocRef, {
+          telefono: formData.telefono,
+          anioEstudio: parseInt(formData.anioEstudio) || 0,
+          carrera: formData.carrera,
+          genero: formData.genero,
+          sedeAcademica: formData.sedeAcademica,
+          fechaNacimiento: formData.fechaNacimiento,
+        });
+        alert('Datos enviados correctamente');
+        history.push('/tarjetas');
+      } else {
+        console.error('No se encontró el documento para este usuario.');
+        setFormError('Error: No se encontró el usuario.');
+      }
     } catch (error) {
-      console.error("Error al guardar los datos en Firestore: ", error);
+      console.error('Error al guardar los datos en Firestore:', error);
       setFormError('Hubo un problema al enviar los datos. Intente nuevamente.');
     } finally {
       setShowLoading(false);
@@ -84,23 +96,14 @@ const RegisterForm: React.FC = () => {
         <div className="form-container">
           <IonInput
             className="input"
-            label="Nombre"
+            label="Teléfono"
             fill="solid"
             labelPlacement="floating"
-            placeholder="Ingresa tu nombre"
-            name="nombre"
-            value={formData.nombre}
+            placeholder="Ingresa tu número de teléfono"
+            name="telefono"
+            value={formData.telefono}
             onIonChange={handleInputChange}
-          />
-          <IonInput
-            className="input"
-            label="Apellido"
-            fill="solid"
-            labelPlacement="floating"
-            placeholder="Ingresa tu apellido"
-            name="apellido"
-            value={formData.apellido}
-            onIonChange={handleInputChange}
+            type="tel"
           />
           <IonInput
             className="input"
@@ -124,7 +127,7 @@ const RegisterForm: React.FC = () => {
             onIonChange={handleInputChange}
             type="date"
           />
-          
+
           {/* Combo box dinámico para las carreras */}
           <IonSelect
             className="input"
@@ -176,7 +179,7 @@ const RegisterForm: React.FC = () => {
         </div>
 
         <IonLoading
-          className="custom-loading" 
+          className="custom-loading"
           isOpen={showLoading}
           message={'Guardando datos...'}
           onDidDismiss={() => setShowLoading(false)}

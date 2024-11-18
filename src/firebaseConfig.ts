@@ -22,13 +22,34 @@ export async function googleLogin() {
   try {
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
+
+    // Verifica si ya existe un documento para este usuario
+    const estudiantesRef = collection(db, "Estudiantes");
+    const q = query(estudiantesRef, where("email", "==", user.email));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      // Si no existe el usuario, crea uno nuevo
+      const newEstudiante = {
+        email: user.email,
+        nombreCompleto: user.displayName || "",
+        providerId: user.providerId,
+        fechaRegistro: Timestamp.now(),
+      };
+      await addDoc(estudiantesRef, newEstudiante);
+      console.log("Usuario registrado en Firestore:", newEstudiante);
+    } else {
+      console.log("Usuario ya registrado en Firestore.");
+    }
+
     console.log("Inicio de sesión exitoso con Google", user);
-    return true;
+    return { success: true, email: user.email };
   } catch (error) {
     console.error("Error al iniciar sesión con Google:", error);
-    return false;
+    return { success: false, error };
   }
 }
+
 
 // Iniciar sesión con email y contraseña
 export async function loginUser(username: string, password: string) {
@@ -187,3 +208,6 @@ export const addDislike = async (fromUserId: string, toUserId: string) => {
     console.error("Error al registrar el dislike:", error);
   }
 };
+
+
+
