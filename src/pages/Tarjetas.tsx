@@ -19,12 +19,13 @@ import {
 import { createGesture } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import { db, auth, addLike, addDislike} from "../firebaseConfig";
-import { collection, getDocs, onSnapshot, query, where } from "firebase/firestore"; // Asegúrate de importar onSnapshot
+import { collection, getDocs, onSnapshot, query, where, addDoc, Timestamp} from "firebase/firestore"; // Asegúrate de importar onSnapshot
 import LikeAnimation from "../components/LikeAnimation";
 import CheckAnimation from "../components/CheckAnimation";
 import XAnimation from "../components/XAnimation";
 import logo_SAD from "../assets/logo_SAD.png";
 import "../styles/TarjetasStyles.css";
+
 
 interface Estudiante {
   id: string;
@@ -37,6 +38,7 @@ interface Estudiante {
   descripcion: string;
   instagram?: string;
   photoUrl?: string; // Campo para la foto de perfil
+  email: string; // Agregamos el campo email
 }
 
 const calcularEdad = (fechaNacimiento: string) => {
@@ -59,18 +61,60 @@ const CardView: React.FC = () => {
 
   useEffect(() => {
     const fetchEstudiantes = async () => {
-      const estudiantesQuery = query(collection(db, "Estudiantes"));
-      onSnapshot(estudiantesQuery, (snapshot) => {
-        const estudiantesData: Estudiante[] = snapshot.docs.map((doc) => {
-          const data = doc.data() as Omit<Estudiante, "id" | "edad">;
-          const edad = calcularEdad(data.fechaNacimiento);
-          return { id: doc.id, ...data, edad };
+      try {
+        const userEmail = auth.currentUser?.email; // Obtén el email del usuario actual
+        const userId = auth.currentUser?.uid; // Obtén el ID del usuario actual
+        console.log("Email del usuario actual:", userEmail);
+  
+        if (!userEmail || !userId) {
+          console.error("El usuario no está autenticado.");
+          return;
+        }
+  
+        // Consulta las subcolecciones LIKES y DISLIKES del usuario actual
+        const likesRef = collection(db, `Estudiantes/${userId}/LIKES`);
+        const dislikesRef = collection(db, `Estudiantes/${userId}/DISLIKES`);
+  
+        const [likesSnapshot, dislikesSnapshot] = await Promise.all([
+          getDocs(likesRef),
+          getDocs(dislikesRef),
+        ]);
+  
+        // Obtén los IDs de los usuarios ya evaluados
+        const likedUserIds = likesSnapshot.docs.map((doc) => doc.data().toUserId);
+        const dislikedUserIds = dislikesSnapshot.docs.map(
+          (doc) => doc.data().toUserId
+        );
+  
+        const excludedUserIds = new Set([...likedUserIds, ...dislikedUserIds]);
+  
+        // Consulta todos los estudiantes
+        const estudiantesQuery = query(collection(db, "Estudiantes"));
+        onSnapshot(estudiantesQuery, (snapshot) => {
+          const estudiantesData: Estudiante[] = snapshot.docs
+            .map((doc) => {
+              const data = doc.data() as Omit<Estudiante, "id" | "edad">;
+              const edad = calcularEdad(data.fechaNacimiento);
+              return { id: doc.id, ...data, edad };
+            })
+            .filter(
+              (estudiante) =>
+                estudiante.email !== userEmail && // Filtra al usuario autenticado
+                !excludedUserIds.has(estudiante.id) // Filtra a los usuarios ya evaluados
+            );
+  
+          console.log("Estudiantes filtrados:", estudiantesData);
+          setEstudiantes(estudiantesData);
         });
-        setEstudiantes(estudiantesData);
-      });
+      } catch (error) {
+        console.error("Error al obtener los estudiantes:", error);
+      }
     };
+  
     fetchEstudiantes();
   }, []);
+  
+  
 
   const handleSwipe = (direction: number) => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % estudiantes.length);
@@ -117,7 +161,33 @@ const CardView: React.FC = () => {
       const fromUserId = auth.currentUser?.uid; // ID del usuario actual (quien da el Check)
   
       if (fromUserId && toUserId) {
-        await addLike(fromUserId, toUserId); // Registra el Check en Firestore
+        // Registra el like en Firestore
+        await addLike(fromUserId, toUserId);
+  
+        // Verifica si el chat ya existe
+        const chatsRef = collection(db, "Chats");
+        const chatQuery = query(
+          chatsRef,
+          where("participants", "array-contains", fromUserId)
+        );
+        const chatSnapshot = await getDocs(chatQuery);
+  
+        let existingChat = null;
+        chatSnapshot.forEach((doc) => {
+          const data = doc.data();
+          if (data.participants.includes(toUserId)) {
+            existingChat = doc.id; // Chat encontrado
+          }
+        });
+  
+        if (!existingChat) {
+          // Si no existe un chat, crearlo
+          await addDoc(chatsRef, {
+            participants: [fromUserId, toUserId],
+            timestamp: Timestamp.now(),
+          });
+        }
+
       } else {
         console.error("Faltan IDs para registrar el Check.");
       }
@@ -127,6 +197,7 @@ const CardView: React.FC = () => {
       handleSwipe(1); // Cambia a la siguiente tarjeta después de la animación
     }, 500); // Asegúrate de que este tiempo coincide con la duración de la animación
   };
+  
   
   
   

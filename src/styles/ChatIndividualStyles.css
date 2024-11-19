@@ -1,0 +1,98 @@
+.chat-page {
+    display: flex;
+    flex-direction: column;
+    background-color: #f5f5f5; /* Fondo claro */
+  }
+  
+  .chat-header {
+    --background: #ff4757; /* Color rojo para el encabezado */
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+  }
+  
+  .chat-avatar {
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center; /* Centra verticalmente */
+  }
+  
+  .chat-avatar img {
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    margin-top: 25px;
+  }
+  
+  .chat-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  .messages-container {
+    padding: 10px;
+    flex-grow: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .message-bubble {
+    max-width: 80%; /* Limita el ancho máximo al 80% del contenedor */
+    width: auto; /* Se adapta al tamaño del mensaje */
+    padding: 10px 15px; /* Espaciado interno */
+    margin: 5px 0;
+    border-radius: 20px;
+    font-size: 16px;
+    line-height: 1.5;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    word-wrap: break-word; /* Permite el ajuste de línea para mensajes largos */
+    word-break: break-word; /* Maneja palabras largas */
+  }
+  
+  .message-bubble.sent {
+    align-self: flex-end;
+    background-color: #1279da; /* Azul */
+    color: white;
+  }
+  
+  .message-bubble.received {
+    align-self: flex-start;
+    background-color: #e0e0e0; /* Gris claro */
+    color: black;
+  }
+  
+  .message-input-container {
+    display: flex;
+    padding: 10px;
+    background-color: white;
+    border-top: 1px solid #ccc;
+  }
+  
+  .message-input {
+    flex-grow: 1;
+    margin-right: 10px;
+    border: none;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 20px;
+    background-color: #f1f1f1;
+  }
+  
+  .send-button {
+    --background: #ff4757;
+    --color: white;
+    border-radius: 20px;
+    padding: 0 15px;
+  }
+  
+  .typing-indicator {
+    font-size: 14px;
+    color: #888;
+    margin: auto;
+    text-align: left;
+    font-style: italic;
+  }
+  

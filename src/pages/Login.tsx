@@ -20,13 +20,6 @@ const Login: React.FC = () => {
     
     let isValid = true;
 
-    if (password.length < 6) {
-      setPasswordError('La contraseña debe tener al menos 6 caracteres');
-      isValid = false;
-    } else {
-      setPasswordError('');
-    }
-
     if (isValid) {
       const success = await loginUser(email, password);
       if (success) {

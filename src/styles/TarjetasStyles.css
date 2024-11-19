@@ -219,6 +219,33 @@
   box-shadow: #19436E;
 }
 
+.no-cards {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* Ocupa toda la pantalla */
+  text-align: center;
+  color: #666;
+  padding: 20px;
+}
+
+.no-cards h2 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.no-cards p {
+  font-size: 1rem;
+  color: #777;
+}
+
+.no-cards img {
+  max-width: 150px;
+  margin-top: 20px;
+  opacity: 0.8;
+}
 
 
 @keyframes fadeIn {

@@ -3,6 +3,7 @@ import { getFirestore, doc, addDoc, Timestamp} from "firebase/firestore";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 import { collection, getDocs, query, where, updateDoc} from "firebase/firestore";
+import { getDatabase, ref, set, onValue, push } from "firebase/database"; // Importa Realtime Database
 const config = {
   apiKey: "AIzaSyBjdhCSMelJZCYJU-Ky6dwNdSSOTejBp6Y",
   authDomain: "prueba-aa0db.firebaseapp.com",
@@ -15,7 +16,7 @@ const config = {
 const app = initializeApp(config);
 export const db = getFirestore(app);
 export const auth = getAuth();
-
+export const rtdb = getDatabase(app); // Inicializa Realtime Database
 // Login con Google
 export async function googleLogin() {
   const provider = new GoogleAuthProvider();
@@ -208,6 +209,8 @@ export const addDislike = async (fromUserId: string, toUserId: string) => {
     console.error("Error al registrar el dislike:", error);
   }
 };
+
+
 
 
 

@@ -1,14 +1,64 @@
-/* MessageList.css */
-.message-sender {
+/* Estilo general de la página */
+.page-content {
+    background-color: #0a6ed1 !important; /* Fondo azul */
+    min-height: 100vh; /* Altura mínima para cubrir toda la pantalla */
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Encabezado */
+  .header-toolbar {
+    --background: #dc3545; /* Fondo rojo oscuro */
+    --color: #fff; /* Texto blanco */
+  }
+  
+  /* Lista */
+  .ion-list {
+    margin-top: 1rem;
+    padding: 0;
+    --color: #dc3545; /* Color del texto en la lista */
+  }
+  
+  /* Elementos de la lista */
+  .ion-item {
+    border-radius: 8px; /* Bordes redondeados */
+    background-color: #ffffff; /* Fondo blanco */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 15); /* Sombra sutil */
+    margin-bottom: 5px; /* Espaciado entre los elementos */
+  }
+  
+  /* Avatares */
+  .ion-avatar img {
+    border-radius: 50%; /* Forma circular */
+    border: 3px solid #dc3545; /* Borde rojo */
+  }
+  
+  /* Estilo del nombre de usuario */
+  .user-name {
+    color: #3498db; /* Azul vibrante */
     font-weight: bold;
+    font-size: 16px; /* Ajusta el tamaño del texto */
   }
   
-  .message-text {
-    color: #666;
-  }
-  
-  .message-status {
-    color: #4caf50;
+  /* Etiquetas */
+  .ion-label h2 {
     font-size: 1.2rem;
+    font-weight: bold;
+    color: #333; /* Texto oscuro */
+    margin: 0;
+  }
+  
+  /* Mensaje de carga y mensaje vacío */
+  .loading-message,
+  .empty-message {
+    text-align: center;
+    color: #ffffff; /* Texto blanco */
+    font-size: 1.1rem;
+    margin-top: 2rem;
+  }
+  
+  /* Botón de retroceso */
+  .back-button {
+    color: #fff; /* Texto blanco */
   }
   
