@@ -1,64 +1,100 @@
 /* Estilo general de la página */
 .page-content {
-    background-color: #0a6ed1 !important; /* Fondo azul */
-    min-height: 100vh; /* Altura mínima para cubrir toda la pantalla */
-    display: flex;
-    flex-direction: column;
-  }
-  
-  /* Encabezado */
-  .header-toolbar {
-    --background: #dc3545; /* Fondo rojo oscuro */
-    --color: #fff; /* Texto blanco */
-  }
-  
-  /* Lista */
-  .ion-list {
-    margin-top: 1rem;
-    padding: 0;
-    --color: #dc3545; /* Color del texto en la lista */
-  }
-  
-  /* Elementos de la lista */
-  .ion-item {
-    border-radius: 8px; /* Bordes redondeados */
-    background-color: #ffffff; /* Fondo blanco */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 15); /* Sombra sutil */
-    margin-bottom: 5px; /* Espaciado entre los elementos */
-  }
-  
-  /* Avatares */
-  .ion-avatar img {
-    border-radius: 50%; /* Forma circular */
-    border: 3px solid #dc3545; /* Borde rojo */
-  }
-  
-  /* Estilo del nombre de usuario */
-  .user-name {
-    color: #3498db; /* Azul vibrante */
-    font-weight: bold;
-    font-size: 16px; /* Ajusta el tamaño del texto */
-  }
-  
-  /* Etiquetas */
-  .ion-label h2 {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #333; /* Texto oscuro */
-    margin: 0;
-  }
-  
-  /* Mensaje de carga y mensaje vacío */
-  .loading-message,
-  .empty-message {
-    text-align: center;
-    color: #ffffff; /* Texto blanco */
-    font-size: 1.1rem;
-    margin-top: 2rem;
-  }
-  
-  /* Botón de retroceso */
-  .back-button {
-    color: #fff; /* Texto blanco */
-  }
-  
+  background-color: #0a6ed1 !important; /* Fondo azul */
+  min-height: 100vh; /* Altura mínima para cubrir toda la pantalla */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Encabezado */
+.header-toolbar {
+  --background: #dc3545; /* Fondo rojo oscuro */
+  --color: #fff; /* Texto blanco */
+}
+
+/* Lista */
+.ion-list {
+  margin-top: 1rem;
+  padding: 0;
+  --color: #dc3545; /* Color del texto en la lista */
+}
+
+/* Elementos de la lista */
+.ion-item {
+  border-radius: 8px; /* Bordes redondeados */
+  background-color: #ffffff; /* Fondo blanco */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); /* Sombra sutil */
+  margin-bottom: 5px; /* Espaciado entre los elementos */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ion-item:hover {
+  transform: translateY(-3px); /* Levanta el elemento ligeramente */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Aumenta la sombra */
+}
+
+/* Avatares */
+.ion-avatar img {
+  border-radius: 50%; /* Forma circular */
+  border: 3px solid #dc3545; /* Borde rojo */
+}
+
+/* Estilo del nombre de usuario */
+.user-name {
+  color: #3498db; /* Azul vibrante */
+  font-weight: bold;
+  font-size: 16px; /* Ajusta el tamaño del texto */
+}
+
+/* Etiquetas */
+.ion-label h2 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333; /* Texto oscuro */
+  margin: 0;
+}
+
+/* Sección de solicitudes de mensajes */
+.section-title {
+  color: #333; /* Texto blanco */
+  font-size: 1.5rem; /* Tamaño grande */
+  font-weight: bold;
+  margin: 1rem 0; /* Espaciado superior e inferior */
+  text-align: center;
+  text-transform: uppercase; /* Letras mayúsculas */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); /* Sombra del texto */
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+/* Botones de aceptar y rechazar */
+.ion-item button {
+  margin-left: 10px;
+}
+
+.ion-button[color="success"] {
+  --background: #4caf50; /* Verde */
+  --background-hover: #45a047; /* Verde más oscuro */
+  color: white;
+  border-radius: 4px;
+}
+
+.ion-button[color="danger"] {
+  --background: #f44336; /* Rojo */
+  --background-hover: #d32f2f; /* Rojo más oscuro */
+  color: white;
+  border-radius: 4px;
+}
+
+/* Mensaje de carga y mensaje vacío */
+.loading-message,
+.empty-message {
+  text-align: center;
+  color: #333; /* Texto blanco */
+  font-size: 1.1rem;
+  margin-top: 2rem;
+}
+
+/* Botón de retroceso */
+.back-button {
+  color: #fff; /* Texto blanco */
+}

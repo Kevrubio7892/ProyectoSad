@@ -23,7 +23,6 @@ const Login: React.FC = () => {
     if (isValid) {
       const success = await loginUser(email, password);
       if (success) {
-        alert('Inicio de sesión exitoso');
         history.push('/tarjetas'); // Redirige a tarjetas después de inicio de sesión exitoso
       } else {
         setPasswordError('Error en las credenciales de inicio de sesión.');

@@ -12,10 +12,10 @@ import {
   IonLabel,
   IonAvatar,
 } from "@ionic/react";
-import { collection, getDocs, query, where, getDoc, doc } from "firebase/firestore";
-import { useHistory } from "react-router-dom"; // Importar useHistory
-import { db, auth } from "../firebaseConfig"; // Firestore configuración
-import "../styles/ChatsStyles.css"; // Importar estilos
+import { collection, query, where, onSnapshot, doc, getDoc } from "firebase/firestore";
+import { useHistory } from "react-router-dom";
+import { db, auth } from "../firebaseConfig";
+import "../styles/ChatsStyles.css";
 
 interface User {
   id: string;
@@ -24,75 +24,45 @@ interface User {
 }
 
 const Chats: React.FC = () => {
-  const [likedUsers, setLikedUsers] = useState<User[]>([]);
+  const [chats, setChats] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const history = useHistory(); // Inicializar useHistory
+  const currentUserId = auth.currentUser?.uid;
+  const history = useHistory();
 
   useEffect(() => {
-    const fetchLikedUsers = async () => {
-      try {
-        setLoading(true);
+    if (!currentUserId) return;
 
-        // Obtén el ID del usuario autenticado
-        const currentUserId = auth.currentUser?.uid;
-        console.log("ID del usuario actual:", currentUserId);
+    // Sincroniza los chats existentes
+    const chatsRef = collection(db, "Chats");
+    const chatsQuery = query(chatsRef, where("participants", "array-contains", currentUserId));
 
-        if (!currentUserId) {
-          console.error("Usuario no autenticado");
-          setLoading(false);
-          return;
-        }
+    const unsubscribe = onSnapshot(chatsQuery, async (snapshot) => {
+      const chatUsers: User[] = [];
+      for (const chat of snapshot.docs) {
+        const participants = chat.data().participants as string[];
+        const otherUserId = participants.find((id) => id !== currentUserId);
 
-        // Consulta todos los documentos de la colección Estudiantes
-        const estudiantesRef = collection(db, "Estudiantes");
-        const estudiantesSnapshot = await getDocs(estudiantesRef);
-
-        // Itera sobre los documentos y busca subcolecciones LIKES donde `fromUserId` coincida con el usuario actual
-        const likedUserIds: string[] = [];
-        for (const estudianteDoc of estudiantesSnapshot.docs) {
-          const likesRef = collection(db, `Estudiantes/${estudianteDoc.id}/LIKES`);
-          const likesQuery = query(likesRef, where("fromUserId", "==", currentUserId));
-          const likesSnapshot = await getDocs(likesQuery);
-
-          likesSnapshot.forEach((likeDoc) => {
-            const data = likeDoc.data();
-            if (data.toUserId) {
-              likedUserIds.push(data.toUserId);
-            }
-          });
-        }
-
-        console.log("IDs de usuarios a los que se les dio like:", likedUserIds);
-
-        // Carga la información de los usuarios a quienes se les dio "like"
-        const userPromises = likedUserIds.map(async (userId) => {
-          const userDoc = await getDoc(doc(db, "Estudiantes", userId));
+        if (otherUserId) {
+          const userDoc = await getDoc(doc(db, "Estudiantes", otherUserId));
           if (userDoc.exists()) {
-            return {
+            chatUsers.push({
               id: userDoc.id,
               ...userDoc.data(),
-            } as User;
+            } as User);
           }
-          return null;
-        });
-
-        const likedUsersData = (await Promise.all(userPromises)).filter(Boolean) as User[];
-        console.log("Datos de usuarios a los que se les dio like:", likedUsersData);
-
-        setLikedUsers(likedUsersData);
-      } catch (error) {
-        console.error("Error al obtener los usuarios con like:", error);
-      } finally {
-        setLoading(false);
+        }
       }
-    };
+      setChats(chatUsers);
+      setLoading(false);
+    });
 
-    fetchLikedUsers();
-  }, []);
+    return () => unsubscribe();
+  }, [currentUserId]);
 
   const goToChat = (userId: string) => {
-    history.push(`/chat/${userId}`); // Navega al chat individual
+    history.push(`/chat/${userId}`); // Se pasa correctamente el ID del receptor
   };
+  
 
   return (
     <IonPage className="page-content">
@@ -108,11 +78,11 @@ const Chats: React.FC = () => {
       <IonContent>
         {loading ? (
           <p className="loading-message">Cargando...</p>
-        ) : likedUsers.length === 0 ? (
-          <p className="empty-message">No se encontraron usuarios con like.</p>
+        ) : chats.length === 0 ? (
+          <p className="empty-message">No tienes chats activos.</p>
         ) : (
           <IonList className="ion-list">
-            {likedUsers.map((user) => (
+            {chats.map((user) => (
               <IonItem key={user.id} className="ion-item" onClick={() => goToChat(user.id)}>
                 <IonAvatar slot="start">
                   <img
