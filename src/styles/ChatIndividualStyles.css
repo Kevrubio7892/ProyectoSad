@@ -37,6 +37,7 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+
   }
   
   .message-bubble {
@@ -69,6 +70,7 @@
     padding: 10px;
     background-color: white;
     border-top: 1px solid #ccc;
+    background: rgba(0, 0, 0, 0.35); /* Dark overlay */
   }
   
   .message-input {
@@ -77,15 +79,17 @@
     border: none;
     padding: 10px;
     font-size: 16px;
-    border-radius: 20px;
+    border-radius: 10px;
     background-color: #f1f1f1;
+    color: #888;
   }
   
   .send-button {
     --background: #ff4757;
     --color: white;
-    border-radius: 20px;
+    --border-radius: 50%;
     padding: 0 15px;
+    width: 20%;
   }
   
   .typing-indicator {

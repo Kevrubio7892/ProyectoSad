@@ -11,6 +11,7 @@ import {
   IonInput,
   IonButton,
   IonAvatar,
+  IonIcon,
 } from "@ionic/react";
 import {
   collection,
@@ -20,18 +21,18 @@ import {
   onSnapshot,
   doc,
   getDoc,
-  setDoc,
   updateDoc,
 } from "firebase/firestore";
-import { db, auth } from "../firebaseConfig"; // Configuración de Firestore
-import "../styles/ChatIndividualStyles.css"; // Estilos personalizados para el chat
+import { db, auth } from "../firebaseConfig";
+import { arrowUpOutline } from "ionicons/icons"; // Importa el ícono de flecha hacia arriba
+import "../styles/ChatIndividualStyles.css";
 
 interface Message {
   id: string;
   senderId: string;
   receiverId: string;
   content: string;
-  timestamp: any; // Timestamp de Firestore
+  timestamp: any;
 }
 
 interface User {
@@ -43,7 +44,7 @@ interface User {
 interface ChatViewProps {
   match: {
     params: {
-      userId: string; // ID del usuario con quien se está chateando
+      userId: string;
     };
   };
 }
@@ -51,28 +52,19 @@ interface ChatViewProps {
 const ChatView: React.FC<ChatViewProps> = ({ match }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState<string>("");
-  const [receiverData, setReceiverData] = useState<User | null>(null); // Datos del usuario receptor
-  const [isTyping, setIsTyping] = useState(false); // Estado "escribiendo" del otro usuario
-  const receiverId = match.params.userId; // ID del usuario con quien se chatea
-  const currentUserId = auth.currentUser?.uid; // ID del usuario autenticado
+  const [receiverData, setReceiverData] = useState<User | null>(null);
+  const [isTyping, setIsTyping] = useState<boolean>(false);
 
-  const chatDocId = [currentUserId, receiverId].sort().join("_"); // Generar un ID único para el chat
+  const receiverId = match.params.userId;
+  const currentUserId = auth.currentUser?.uid;
 
   useEffect(() => {
     if (!receiverId) return;
 
-    // Obtén los datos del receptor desde Firestore
     const fetchReceiverData = async () => {
-      try {
-        const userDoc = await getDoc(doc(db, "Estudiantes", receiverId));
-        if (userDoc.exists()) {
-          const userData = userDoc.data() as User;
-          setReceiverData(userData);
-        } else {
-          console.error("Usuario no encontrado");
-        }
-      } catch (error) {
-        console.error("Error al obtener datos del receptor:", error);
+      const userDoc = await getDoc(doc(db, "Estudiantes", receiverId));
+      if (userDoc.exists()) {
+        setReceiverData(userDoc.data() as User);
       }
     };
 
@@ -82,11 +74,10 @@ const ChatView: React.FC<ChatViewProps> = ({ match }) => {
   useEffect(() => {
     if (!currentUserId || !receiverId) return;
 
-    // Escucha en tiempo real los mensajes entre los dos usuarios
     const messagesRef = collection(db, "Messages");
     const messagesQuery = query(messagesRef, orderBy("timestamp", "asc"));
 
-    const unsubscribeMessages = onSnapshot(messagesQuery, (snapshot) => {
+    const unsubscribe = onSnapshot(messagesQuery, (snapshot) => {
       const loadedMessages = snapshot.docs
         .map((doc) => ({ id: doc.id, ...doc.data() }))
         .filter(
@@ -97,38 +88,12 @@ const ChatView: React.FC<ChatViewProps> = ({ match }) => {
       setMessages(loadedMessages);
     });
 
-    // Escucha en tiempo real el estado de "escribiendo" del receptor
-    const typingDocRef = doc(db, "TypingStatus", chatDocId);
-    const unsubscribeTyping = onSnapshot(typingDocRef, (docSnapshot) => {
-      if (docSnapshot.exists()) {
-        const typingData = docSnapshot.data();
-        setIsTyping(typingData?.[receiverId] || false);
-      }
-    });
-
-    return () => {
-      unsubscribeMessages();
-      unsubscribeTyping();
-    };
+    return () => unsubscribe();
   }, [currentUserId, receiverId]);
 
-  const handleInputChange = async (value: string) => {
-    setNewMessage(value);
-  
-    if (!currentUserId) return; // Asegúrate de que currentUserId no es undefined
-  
-    // Actualiza el estado "escribiendo" en Firestore
-    const typingDocRef = doc(db, "TypingStatus", chatDocId);
-    await setDoc(
-      typingDocRef,
-      { [currentUserId.toString()]: value.length > 0 }, // Convierte currentUserId a string explícitamente
-      { merge: true }
-    );
-  };
-  
   const sendMessage = async () => {
     if (!newMessage.trim() || !currentUserId || !receiverId) return;
-  
+
     try {
       await addDoc(collection(db, "Messages"), {
         senderId: currentUserId,
@@ -136,19 +101,36 @@ const ChatView: React.FC<ChatViewProps> = ({ match }) => {
         content: newMessage.trim(),
         timestamp: new Date(),
       });
-  
-      // Limpia el estado "escribiendo"
-      const typingDocRef = doc(db, "TypingStatus", chatDocId);
-      await setDoc(
-        typingDocRef,
-        { [currentUserId.toString()]: false }, // Convierte currentUserId a string explícitamente
-        { merge: true }
-      );
-  
-      setNewMessage(""); // Limpia el campo de entrada
+      setNewMessage("");
+      await updateDoc(doc(db, "TypingStatus", receiverId), {
+        isTyping: false,
+      });
     } catch (error) {
       console.error("Error enviando mensaje:", error);
     }
+  };
+
+  useEffect(() => {
+    if (!currentUserId || !receiverId) return;
+
+    const typingRef = doc(db, "TypingStatus", receiverId);
+
+    const unsubscribe = onSnapshot(typingRef, (doc) => {
+      if (doc.exists()) {
+        setIsTyping(doc.data()?.isTyping || false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [currentUserId, receiverId]);
+
+  const handleTyping = async () => {
+    if (!currentUserId) return;
+
+    const typingRef = doc(db, "TypingStatus", currentUserId);
+    await updateDoc(typingRef, {
+      isTyping: newMessage.length > 0,
+    });
   };
 
   return (
@@ -161,7 +143,10 @@ const ChatView: React.FC<ChatViewProps> = ({ match }) => {
           {receiverData && (
             <>
               <IonAvatar className="chat-avatar">
-                <img src={receiverData.photoUrl || "https://via.placeholder.com/150"} alt="Avatar del Usuario" />
+                <img
+                  src={receiverData.photoUrl || "https://via.placeholder.com/150"}
+                  alt="Avatar del Usuario"
+                />
               </IonAvatar>
               <IonTitle className="chat-title">{receiverData.nombreCompleto}</IonTitle>
             </>
@@ -181,9 +166,7 @@ const ChatView: React.FC<ChatViewProps> = ({ match }) => {
               {message.content}
             </div>
           ))}
-          {isTyping && (
-            <div className="typing-indicator">El usuario está escribiendo...</div>
-          )}
+          {isTyping && <div className="typing-indicator">Escribiendo...</div>}
         </div>
       </IonContent>
 
@@ -192,11 +175,14 @@ const ChatView: React.FC<ChatViewProps> = ({ match }) => {
           <IonInput
             value={newMessage}
             placeholder="Escribe un mensaje..."
-            onIonChange={(e) => handleInputChange(e.detail.value!)}
+            onIonInput={(e) => {
+              setNewMessage(e.detail.value!);
+              handleTyping();
+            }}
             className="message-input"
           />
           <IonButton onClick={sendMessage} className="send-button">
-            Enviar
+            <IonIcon icon={arrowUpOutline} />
           </IonButton>
         </div>
       </IonFooter>
