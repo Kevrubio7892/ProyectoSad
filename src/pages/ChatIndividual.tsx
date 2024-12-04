@@ -25,6 +25,7 @@ import {
 import { db, auth } from "../firebaseConfig";
 import { arrowUpOutline } from "ionicons/icons";
 import "../styles/ChatIndividualStyles.css";
+import { useParams } from "react-router";
 
 interface Message {
   id: string;
@@ -54,7 +55,7 @@ const ChatView: React.FC<ChatViewProps> = ({ match }) => {
   const [receiverData, setReceiverData] = useState<User | null>(null);
   const [loadingMessages, setLoadingMessages] = useState<boolean>(true);
 
-  const receiverId = match.params.userId;
+  const { userId: receiverId } = useParams<{ userId: string }>();
   const currentUserId = auth.currentUser?.uid;
 
   useEffect(() => {
@@ -146,6 +147,7 @@ const ChatView: React.FC<ChatViewProps> = ({ match }) => {
           )}
         </IonToolbar>
       </IonHeader>
+
 
       <IonContent>
         <div className="messages-container">

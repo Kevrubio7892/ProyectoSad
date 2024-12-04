@@ -5,31 +5,36 @@
 }
 
 .chat-header {
-  --background: #ff4757; /* Color rojo para el encabezado */
-  color: white;
-  display: flex;
-  align-items: center;
-  padding: 0 10px;
+  --background: #ff4757 !important; /* Fondo rojo */
+  --color: white !important;
+  --display: flex !important;
+  --flex-direction: column !important; /* Cambiar a columna para alinear avatar y nombre */
+  --align-items: center !important; /* Centrar horizontalmente */
+  --justify-content: center !important; /* Centrar verticalmente */
+  --text-align: center !important; /* Alinear el texto al centro */
+  --padding: 10px !important; /* Añadir padding para un diseño más espacioso */
 }
 
 .chat-avatar {
-  display: flex;
-  justify-content: center; /* Centra horizontalmente */
-  align-items: center; /* Centra verticalmente */
+  --margin-bottom: 5px !important; /* Separación entre el avatar y el nombre */
+  margin: auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .chat-avatar img {
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  margin-top: 25px;
+  --border-radius: 50% !important; /* Redondear el avatar */
+  --width: 50px !important;
+  --height: 50px !important;
 }
 
 .chat-title {
-  font-size: 1.2rem;
-  font-weight: bold;
+  --font-size: 1.2rem !important;
+  --font-weight: bold !important;
+  margin: auto;
   text-align: center;
 }
+
 
 .messages-container {
   padding: 10px;

@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 import '../styles/LoginStyles.css';
 import logo from '../assets/logo.png';
 import logo_SAD from '../assets/logo_SAD.png';
-import { loginUser, googleLogin } from '../firebaseConfig';
+import { loginUser, googleLogin, getUserRoleFromCollections } from '../firebaseConfig';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>('');
@@ -16,21 +16,26 @@ const Login: React.FC = () => {
   const history = useHistory();
 
   const handleLogin = async () => {
-    setShowLoading(true);  // Mostrar el loading
-    
-    let isValid = true;
-
-    if (isValid) {
-      const success = await loginUser(email, password);
-      if (success) {
-        history.push('/tarjetas'); // Redirige a tarjetas después de inicio de sesión exitoso
+    setShowLoading(true);
+  
+    const success = await loginUser(email, password);
+    if (success) {
+      const role = await getUserRoleFromCollections(email);
+      if (role === "Administrador") {
+        history.push("/admin"); // Redirige a la vista de administrador
+      } else if (role === "Estudiante") {
+        history.push("/tarjetas"); // Redirige a la vista de estudiante
       } else {
-        setPasswordError('Error en las credenciales de inicio de sesión.');
+        setPasswordError("No tienes permisos para acceder. Contacta al administrador.");
       }
+    } else {
+      setPasswordError("Error en las credenciales de inicio de sesión.");
     }
-
-    setShowLoading(false);  // Ocultar el loading al terminar
+  
+    setShowLoading(false);
   };
+  
+  
 
   const handleGoogleLogin = async () => {
     setShowLoading(true); // Mostrar el loading

@@ -211,6 +211,77 @@ export const addDislike = async (fromUserId: string, toUserId: string) => {
 };
 
 
+export const getUserRoleFromCollections = async (userEmail: string): Promise<string | null> => {
+  try {
+    // Verificar en la colección "Estudiantes"
+    const estudiantesRef = collection(db, "Estudiantes");
+    const estudianteQuery = query(estudiantesRef, where("email", "==", userEmail));
+    const estudianteSnapshot = await getDocs(estudianteQuery);
+
+    if (!estudianteSnapshot.empty) {
+      const userDoc = estudianteSnapshot.docs[0];
+      return userDoc.data().role || null; // Devuelve el rol, o null si no existe
+    }
+
+    // Verificar en la colección "Administrador"
+    const administradoresRef = collection(db, "Administrador");
+    const administradorQuery = query(administradoresRef, where("email", "==", userEmail));
+    const administradorSnapshot = await getDocs(administradorQuery);
+
+    if (!administradorSnapshot.empty) {
+      const userDoc = administradorSnapshot.docs[0];
+      return userDoc.data().role || null; // Devuelve el rol, o null si no existe
+    }
+
+    // Si no se encuentra el usuario en ninguna colección
+    return null;
+  } catch (error) {
+    console.error("Error al obtener el rol del usuario:", error);
+    return null;
+  }
+};
 
 
+// Obtener datos del usuario administrador desde Firestore
+export const getAdminData = async (userEmail: string) => {
+  try {
+    const administradoresRef = collection(db, "Administrador");
+    const q = query(administradoresRef, where("email", "==", userEmail));
+    const querySnapshot = await getDocs(q);
 
+    if (!querySnapshot.empty) {
+      const userDoc = querySnapshot.docs[0]; // Toma el primer documento que coincida
+      return userDoc.data(); // Devuelve los datos del usuario administrador
+    } else {
+      console.error("No se encontraron datos para el administrador con el email:", userEmail);
+    }
+  } catch (error) {
+    console.error("Error al obtener datos del administrador:", error);
+  }
+  return null; // Devuelve null si no se encuentran datos
+};
+
+
+// Actualiza la foto de perfil del administrador en Firestore
+export const updateAdminProfilePhoto = async (userEmail: string, photoDataUrl: string) => {
+  try {
+    const adminRef = collection(db, "Administrador"); // Colección específica para administradores
+    const q = query(adminRef, where("email", "==", userEmail));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const userDoc = querySnapshot.docs[0]; // Toma el primer documento que coincida
+      const userDocRef = userDoc.ref;
+
+      // Actualiza el campo 'photoUrl' en Firestore
+      await updateDoc(userDocRef, {
+        photoUrl: photoDataUrl, // Guarda la imagen en formato base64
+      });
+      console.log("Foto de perfil del administrador actualizada correctamente en Firestore.");
+    } else {
+      console.error("No se encontró el documento para este administrador.");
+    }
+  } catch (error) {
+    console.error("Error al actualizar la foto de perfil del administrador:", error);
+  }
+};

@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "657792321743",
+    "firebase_url": "https://prueba-aa0db-default-rtdb.firebaseio.com",
+    "project_id": "prueba-aa0db",
+    "storage_bucket": "prueba-aa0db.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:657792321743:android:5993b9a68e7157446c0fba",
+        "android_client_info": {
+          "package_name": "io.ionic.starter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "657792321743-1vnogsm5t6iulvrr1mijso8pkt5g9bcm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgqRmGTILfhD2kJBENngNTXRnPhrfWBew"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "657792321743-1vnogsm5t6iulvrr1mijso8pkt5g9bcm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

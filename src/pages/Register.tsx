@@ -8,7 +8,12 @@ import {
   IonSelectOption, 
   IonText, 
   IonImg, 
-  IonLoading 
+  IonLoading, 
+  IonHeader,
+  IonToolbar,
+  IonButtons,
+  IonBackButton,
+  IonTitle
 } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
 import '../styles/LoginStyles.css';
@@ -114,10 +119,10 @@ const RegisterForm: React.FC = () => {
   
 
   const handleFormSubmit = async () => {
-    if (!validateForm()) return;
-
+    if (!(await validateForm())) return; // Validación
+  
     setShowLoading(true);
-
+  
     try {
       // Registro en Firebase Authentication
       const success = await registerUser(formData.email, formData.contrasena);
@@ -125,7 +130,7 @@ const RegisterForm: React.FC = () => {
         setFormError('Error en el registro. Intente nuevamente.');
         return;
       }
-
+  
       // Guardar información adicional en Firestore
       const formDataToSubmit = {
         nombreCompleto: `${formData.nombre} ${formData.apellido}`,
@@ -137,14 +142,32 @@ const RegisterForm: React.FC = () => {
         fechaRegistro: new Date().toISOString(),
         telefono: formData.telefono,
         email: formData.email,
-        confirmContrasena: formData.contrasena
+        contrasena: formData.contrasena, // Contraseña
+        confirmContrasena: formData.confirmContrasena, // Confirmación
+        role: "Estudiante", // Añadir el rol de Estudiante
       };
-
+  
       const docId = await registerEstudiante(formDataToSubmit);
       console.log("Estudiante registrado con ID: ", docId);
-
+  
+      // Limpiar el formulario
+      setFormData({
+        nombre: '',
+        apellido: '',
+        anioEstudio: '',
+        carrera: '',
+        genero: '',
+        sedeAcademica: 'Duoc UC Puente Alto',
+        fechaNacimiento: '',
+        telefono: '',
+        email: '',
+        contrasena: '',
+        confirmContrasena: '',
+      });
+  
+      setFormError(''); // Limpia los errores
       alert('Registro exitoso');
-      history.push('/login'); // Redirigir a la página de inicio de sesión
+      history.push('/login'); // Redirigir
     } catch (error) {
       console.error("Error al guardar los datos en Firestore: ", error);
       setFormError('Hubo un problema al enviar los datos. Intente nuevamente.');
@@ -152,9 +175,21 @@ const RegisterForm: React.FC = () => {
       setShowLoading(false);
     }
   };
+  
+  
+  
 
   return (
     <IonPage>
+      <IonHeader>
+        <IonToolbar color="danger">
+          <IonButtons slot="start">
+            <IonBackButton />
+          </IonButtons>
+          <IonTitle>Registrarse</IonTitle>
+        </IonToolbar>
+      </IonHeader>
+
       <IonContent className="login-content" fullscreen>
         <IonImg src={logo} className="background-logo" />
         <IonImg src={logo_SAD} className="bg-logo-sad-reg" />

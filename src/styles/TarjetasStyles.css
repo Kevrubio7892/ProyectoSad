@@ -196,15 +196,7 @@
   color: white;
 }
 
-/* Botón principal */
-.premium-modal .ion-button-premium {
-  --background: linear-gradient(to right, #DC2527, #19436E); /* Gradiente atractivo */
-  --border-radius: 20px; /* Bordes redondeados */
-  --padding: 12px;
-  font-size: 1rem;
-  font-weight: bold;
-  width:  80%;
-}
+
 
 /* Botón secundario */
 .premium-modal .ion-button-cancelar {

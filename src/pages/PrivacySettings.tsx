@@ -52,15 +52,6 @@ const PrivacySettings = () => {
 
       <IonContent>
         <IonList>
-          <IonItem lines="none" className="profile-item">
-            <IonAvatar slot="start">
-              <img src="path/to/profile-image.jpg" alt="Profile" /> {/* Reemplaza con la ruta de la imagen */}
-            </IonAvatar>
-            <IonLabel className="profile-label">
-              <h2>María Becerra</h2>
-              <p>Técnico en enfermería</p>
-            </IonLabel>
-          </IonItem>
 
           <IonItem lines="full" className="privacy-item">
             <IonIcon icon={callOutline} slot="start" /> {/* Icono de contactos */}

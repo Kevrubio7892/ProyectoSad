@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   IonPage,
   IonHeader,
@@ -10,85 +10,138 @@ import {
   IonItem,
   IonLabel,
   IonInput,
-  IonIcon,
-  IonActionSheet,
   IonButton,
-  IonAlert
-} from '@ionic/react';
-import { useHistory } from 'react-router-dom';
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { camera, logOut } from 'ionicons/icons';
-import '../styles/PerfilStyles.css';
+  IonActionSheet,
+  IonIcon,
+  IonAlert,
+} from "@ionic/react";
+import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
+import { camera, logOut } from "ionicons/icons";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { auth } from "../firebaseConfig";
+import { getAdminData, updateAdminProfilePhoto } from "../firebaseConfig";
+import "../styles/PerfilStyles.css";
+import { doc, getFirestore, updateDoc } from "firebase/firestore";
 
 const AdminProfilePage = () => {
-  const history = useHistory();
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [isEditing, setIsEditing] = useState(false);
-  const [name, setName] = useState("Ricardo Vergara");
-  const [email, setEmail] = useState("ricardov@gmail.com");
-  const [contact, setContact] = useState("945645623");
-  const [address, setAddress] = useState("Luis Matte 4020");
   const [showActionSheet, setShowActionSheet] = useState(false);
-  const [profilePhoto, setProfilePhoto] = useState("https://image.europafm.com/clipping/cmsimages01/2022/09/28/2FAC71CF-4762-49D3-AA69-B1154B85D5D1/maria-becerra_104.jpg?crop=2457,2457,x476,y0&width=1200&height=1200&optimize=low&format=webply");
-  const [showLogoutAlert, setShowLogoutAlert] = useState(false); // Estado para mostrar la alerta
+  const [profilePhoto, setProfilePhoto] = useState("");
+  const [userData, setUserData] = useState<any>(null);
+  const [docId, setDocId] = useState<string>("");
+  const [showLogoutAlert, setShowLogoutAlert] = useState(false); // Estado para el IonAlert
 
-  const handleEditToggle = () => {
-    setIsEditing(!isEditing);
-  };
-  
-  const handleEmailChange= (e: any) => {
-    setEmail(e.target.value);
+  const handleEditToggle = async () => {
+    if (isEditing) {
+      // Guardar cambios en Firestore
+      try {
+        const db = getFirestore();
+        const userDocRef = doc(db, "Administrador", docId);
+
+        await updateDoc(userDocRef, {
+          telefono: phoneNumber,
+        });
+
+        alert("Información actualizada correctamente.");
+      } catch (error) {
+        console.error("Error al actualizar los datos:", error);
+        alert("Hubo un problema al actualizar los datos. Inténtalo nuevamente.");
+      }
+    }
+
+    setIsEditing(!isEditing); // Alternar entre edición y visualización
   };
 
   const handlePhoneChange = (e: any) => {
-    setContact(e.target.value);
-  };
-
-  const handleAddressChange= (e: any) => {
-    setAddress(e.target.value);
+    setPhoneNumber(e.target.value);
   };
 
   const handleTakePhoto = async () => {
-    const image = await Camera.getPhoto({
-      quality: 90,
-      allowEditing: false,
-      resultType: CameraResultType.DataUrl,
-      source: CameraSource.Camera
-    });
-    setProfilePhoto(image.dataUrl || "");
-    setShowActionSheet(false);
+    try {
+      const image = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: false,
+        resultType: CameraResultType.DataUrl,
+        source: CameraSource.Camera,
+      });
+
+      if (image.dataUrl && userData?.email) {
+        await updateAdminProfilePhoto(userData.email, image.dataUrl);
+        setProfilePhoto(image.dataUrl);
+        alert("Foto de perfil actualizada correctamente.");
+      }
+    } catch (error) {
+      console.error("Error al tomar la foto:", error);
+      alert("Hubo un problema al tomar la foto. Inténtalo nuevamente.");
+    } finally {
+      setShowActionSheet(false);
+    }
   };
 
   const handleUploadPhoto = async () => {
-    const image = await Camera.getPhoto({
-      quality: 90,
-      allowEditing: false,
-      resultType: CameraResultType.DataUrl,
-      source: CameraSource.Photos
+    try {
+      const image = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: false,
+        resultType: CameraResultType.DataUrl,
+        source: CameraSource.Photos,
+      });
+
+      if (image.dataUrl && userData?.email) {
+        await updateAdminProfilePhoto(userData.email, image.dataUrl);
+        setProfilePhoto(image.dataUrl);
+        alert("Foto de perfil actualizada correctamente.");
+      }
+    } catch (error) {
+      console.error("Error al subir la foto:", error);
+      alert("Hubo un problema al subir la foto. Inténtalo nuevamente.");
+    } finally {
+      setShowActionSheet(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth); // Cerrar sesión en Firebase
+      window.location.href = "/login"; // Redirigir al login
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error);
+      alert("Hubo un problema al cerrar sesión. Inténtalo nuevamente.");
+    }
+  };
+
+  useEffect(() => {
+    const fetchAdminData = async (userEmail: string) => {
+      const data = await getAdminData(userEmail);
+      if (data) {
+        setDocId(data.id);
+        setUserData(data);
+        setPhoneNumber(data.telefono || "");
+        setProfilePhoto(data.photoUrl || "https://via.placeholder.com/150");
+      }
+    };
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user && user.email) {
+        fetchAdminData(user.email);
+      }
     });
-    setProfilePhoto(image.dataUrl || "");
-    setShowActionSheet(false);
-  };
 
-  const handleLogout = () => {
-    setShowLogoutAlert(true); // Mostramos la alerta de confirmación
-  };
-
-  const confirmLogout = () => {
-    setShowLogoutAlert(false); // Cerramos la alerta
-    history.push('/login'); // Redirigimos al usuario a la pantalla de login
-  };
+    return () => unsubscribe();
+  }, []);
 
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar className="nav-container" color="danger">
+        <IonToolbar color="danger">
           <IonButtons slot="start">
             <IonBackButton />
           </IonButtons>
-          <IonTitle>Administrador</IonTitle>
+          <IonTitle>Perfil Administrador</IonTitle>
           <IonButtons slot="end">
-            <IonButton onClick={handleLogout}>
-              <IonIcon icon={logOut} slot="icon-only" />
+            <IonButton onClick={() => setShowLogoutAlert(true)}>
+              <IonIcon icon={logOut} />
             </IonButton>
           </IonButtons>
         </IonToolbar>
@@ -96,47 +149,40 @@ const AdminProfilePage = () => {
 
       <IonContent>
         <div className="profile-container">
-          <img
-            src={profilePhoto}
-            alt="Profile"
-            className="profile-image"
-          />
+          <img src={profilePhoto} alt="Profile" className="profile-photo" />
           <IonIcon
             icon={camera}
             className="camera-icon"
             onClick={() => setShowActionSheet(true)}
           />
+          <h2 className="profile-name">{userData?.nombre || "Nombre del Administrador"}</h2>
         </div>
 
+        <IonItem>
+          <IonLabel className="section-label">Datos Personales</IonLabel>
+        </IonItem>
+        <hr />
+
         <IonItem className="personal-info-item">
-          <IonLabel>Nombre: </IonLabel>
-          <p>{name}</p>         
+          <IonLabel>Nombre:</IonLabel>
+          <p>{userData?.nombre || "Nombre no disponible"}</p>
         </IonItem>
 
         <IonItem className="personal-info-item">
           <IonLabel>Correo:</IonLabel>
-          {isEditing ? (
-            <IonInput value={email} onIonChange={handlePhoneChange} />
-          ) : (
-            <p>{email}</p> 
-          )}
+          <p>{userData?.email || "Correo no disponible"}</p>
         </IonItem>
 
         <IonItem className="personal-info-item">
-          <IonLabel>Contacto:</IonLabel>
+          <IonLabel>Número:</IonLabel>
           {isEditing ? (
-            <IonInput value={contact} onIonChange={handleEmailChange} />
+            <IonInput
+              value={phoneNumber}
+              onIonChange={handlePhoneChange}
+              placeholder="Editar teléfono"
+            />
           ) : (
-            <p>{contact}</p> 
-          )}
-        </IonItem>
-
-        <IonItem className="personal-info-item">
-          <IonLabel>Dirección:</IonLabel>
-          {isEditing ? (
-            <IonInput value={address} onIonChange={handleAddressChange} />
-          ) : (
-            <p>{address}</p> 
+            <p>{phoneNumber || "Número no disponible"}</p>
           )}
         </IonItem>
 
@@ -149,36 +195,34 @@ const AdminProfilePage = () => {
           onDidDismiss={() => setShowActionSheet(false)}
           buttons={[
             {
-              text: 'Tomar Foto',
-              handler: handleTakePhoto
+              text: "Tomar Foto",
+              handler: handleTakePhoto,
             },
             {
-              text: 'Subir desde Galería',
-              handler: handleUploadPhoto
+              text: "Subir desde Galería",
+              handler: handleUploadPhoto,
             },
             {
-              text: 'Cancelar',
-              role: 'cancel'
-            }
+              text: "Cancelar",
+              role: "cancel",
+            },
           ]}
         />
 
-        {/* Alerta de confirmación de cierre de sesión */}
         <IonAlert
           isOpen={showLogoutAlert}
           onDidDismiss={() => setShowLogoutAlert(false)}
-          header={'Confirmación'}
-          message={'¿Desea cerrar su sesión?'}
+          header={"Cerrar sesión"}
+          message={"¿Estás seguro de que deseas cerrar sesión?"}
           buttons={[
             {
-              text: 'Cancelar',
-              role: 'cancel',
-              handler: () => setShowLogoutAlert(false)
+              text: "Cancelar",
+              role: "cancel",
             },
             {
-              text: 'Aceptar',
-              handler: confirmLogout
-            }
+              text: "Cerrar sesión",
+              handler: handleLogout,
+            },
           ]}
         />
       </IonContent>

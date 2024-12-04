@@ -65,11 +65,7 @@ const CardView: React.FC = () => {
         const userEmail = auth.currentUser?.email; // Obtén el email del usuario actual
         const userId = auth.currentUser?.uid; // Obtén el ID del usuario actual
         console.log("Email del usuario actual:", userEmail);
-  
-        if (!userEmail || !userId) {
-          console.error("El usuario no está autenticado.");
-          return;
-        }
+
   
         // Consulta las subcolecciones LIKES y DISLIKES del usuario actual
         const likesRef = collection(db, `Estudiantes/${userId}/LIKES`);
@@ -214,35 +210,53 @@ const CardView: React.FC = () => {
         direction: "x",
         onStart: () => {
           if (cardRef.current) {
-            cardRef.current.style.transition = "none";
+            cardRef.current.style.transition = "none"; // Deshabilita las transiciones al iniciar el gesto
           }
         },
         onMove: (ev) => {
           if (cardRef.current) {
-            cardRef.current.style.transform = `translate(${ev.deltaX}px, ${ev.deltaY}px)`;
+            cardRef.current.style.transform = `translate(${ev.deltaX}px, ${ev.deltaY}px) rotate(${ev.deltaX / 10}deg)`; // Aplica un ligero giro
           }
         },
         onEnd: (ev) => {
           const deltaX = ev.deltaX;
-          const direction = deltaX > 0 ? 1 : -1;
-
-          if (deltaX < -150) {
-            handleSwipe(direction);
+          const threshold = 150; // Umbral de deslizamiento
+  
+          if (deltaX < -threshold) {
+            // Deslizar a la izquierda
             if (cardRef.current) {
               cardRef.current.style.transition = "transform 0.3s ease-out";
-              cardRef.current.style.transform = `translateX(-500px)`;
+              cardRef.current.style.transform = `translateX(-500px) rotate(-20deg)`; // Desplaza la carta hacia la izquierda
             }
+            handleSwipe(1); // Ir al siguiente usuario
+          } else if (deltaX > threshold) {
+            // Deslizar a la derecha
+            if (cardRef.current) {
+              cardRef.current.style.transition = "transform 0.3s ease-out";
+              cardRef.current.style.transform = `translateX(500px) rotate(20deg)`; // Desplaza la carta hacia la derecha
+            }
+            handleSwipe(-1); // Ir al usuario anterior
           } else if (cardRef.current) {
+            // Si no alcanza el umbral, regresa la carta a su posición inicial
             cardRef.current.style.transition = "transform 0.3s ease-out";
-            cardRef.current.style.transform = "translate(0, 0)";
+            cardRef.current.style.transform = "translate(0, 0) rotate(0)";
           }
+  
+          // Restablece el estilo después de la transición
+          setTimeout(() => {
+            if (cardRef.current) {
+              cardRef.current.style.transition = "none";
+              cardRef.current.style.transform = "translate(0, 0) rotate(0)";
+            }
+          }, 300); // Ajusta el tiempo a la duración de la animación
         },
       });
       gesture.enable();
-
+  
       return () => gesture.destroy();
     }
   }, [currentIndex]);
+  
 
   return (
     <IonPage className="content">
@@ -313,9 +327,6 @@ const CardView: React.FC = () => {
             <div className="modal-content">
               <h1 className="modal-title">¡PRONTO ESTARÁ DISPONIBLE EL PLAN PREMIUM!</h1>
               <p className="modal-description">Da super likes o reparte likes ilimitados.</p>
-              <IonButton onClick={() => setShowPremiumModal(false)} expand="block" className="ion-button-premium">
-                Pasarme a premium
-              </IonButton>
               <IonButton onClick={() => setShowPremiumModal(false)} expand="block" className="ion-button-cancelar">
                 Cancelar
               </IonButton>
