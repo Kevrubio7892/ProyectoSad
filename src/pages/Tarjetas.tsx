@@ -53,6 +53,7 @@ const CardView: React.FC = () => {
   const [showLikeAnimation, setShowLikeAnimation] = useState(false);
   const [showCheckAnimation, setShowCheckAnimation] = useState(false);
   const [showPremiumModal, setShowPremiumModal] = useState(false);
+  const [showPayPalButton, setShowPayPalButton] = useState(false);
 
   const cardRef = useRef<HTMLDivElement | null>(null);
   const history = useHistory();
@@ -109,6 +110,14 @@ const CardView: React.FC = () => {
     setShowPremiumModal(true);
   };
 
+<<<<<<< HEAD
+  const handlePremiumClick = () => {
+    setShowPayPalButton(true); // Muestra el botón de PayPal cuando el usuario quiere pasarse a premium
+  };
+
+  const handleCheckClick = () => {
+    setShowCheckAnimation(true); // Mostrar la animación al hacer clic en el check
+=======
   const handleCheckClick = async () => {
     setShowCheckAnimation(true);
   
@@ -126,6 +135,7 @@ const CardView: React.FC = () => {
     setTimeout(() => {
       handleSwipe(1); // Cambia a la siguiente tarjeta después de la animación
     }, 500); // Asegúrate de que este tiempo coincide con la duración de la animación
+>>>>>>> RamaKevin
   };
   
   
@@ -239,6 +249,37 @@ const CardView: React.FC = () => {
             onDidDismiss={() => setShowPremiumModal(false)}
             className="premium-modal"
           >
+<<<<<<< HEAD
+
+          <div className="modal-content">
+            <h1 className="modal-title">¡CAMBIATE A PREMIUM!</h1>
+            <p className="modal-description">Da super likes o reparte likes ilimitados.</p>
+            <p className="modal-instruction">Presiona el botón para dirigirte al pago.</p>
+            <IonButton onClick={() => setShowPremiumModal(false)} expand="block" className="ion-button-premium">
+              Pasarme a premium
+            </IonButton>
+            <IonButton
+              onClick={() => setShowPremiumModal(false)}
+              expand="block"           
+              className="ion-button-cancelar"
+            >
+              Cancelar
+            </IonButton>
+          </div>
+        </IonModal>
+      )}
+
+        {showXAnimation && <XAnimation onComplete={handleXAnimationComplete} />}{" "}
+        {/* Mostrar animación de X */}
+        {showLikeAnimation && (
+          <LikeAnimation onComplete={handleLikeAnimationComplete} />
+        )}{" "}
+        {/* Mostrar animación de like */}
+        {showCheckAnimation && (
+          <CheckAnimation onComplete={handleCheckAnimationComplete} />
+        )}{" "}
+        {/* Mostrar animación de check */}
+=======
             <div className="modal-content">
               <h1 className="modal-title">¡PRONTO ESTARÁ DISPONIBLE EL PLAN PREMIUM!</h1>
               <p className="modal-description">Da super likes o reparte likes ilimitados.</p>
@@ -254,6 +295,7 @@ const CardView: React.FC = () => {
         {showXAnimation && <XAnimation onComplete={handleXAnimationComplete} />}
         {showLikeAnimation && <LikeAnimation onComplete={handleLikeAnimationComplete} />}
         {showCheckAnimation && <CheckAnimation onComplete={handleCheckAnimationComplete} />}
+>>>>>>> RamaKevin
       </IonContent>
     </IonPage>
   );

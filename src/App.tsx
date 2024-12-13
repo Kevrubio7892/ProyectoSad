@@ -4,18 +4,23 @@ import { IonReactRouter } from "@ionic/react-router";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import NotiSettings from "./pages/NotiSettings";
-import Opciones from './pages/Opciones';
-import Perfil from './pages/Perfil';
+import Opciones from "./pages/Opciones";
+import Perfil from "./pages/Perfil";
 import Tarjetas from "./pages/Tarjetas";
 import Privacidad from "./pages/PrivacySettings";
 import Admin from "./pages/Admin";
 import AdminPerfil from "./pages/AdminPerfil";
 import Register from "./pages/Register";
+<<<<<<< HEAD
+import RegisterNumber from "./pages/RegisterNumber";
+import RegistarFormGoogle from "./pages/RegisterFormGoogle"
+=======
 import RegistarFormGoogle from "./pages/RegisterFormGoogle";
 import CarreraSetup from "./pages/CarreraSetup"; // Importa el componente temporal
 import GeneroSetup from "./pages/GeneroSetup"; // Importa el componente temporal
 import KhipuPayment from "./components/KhipuPayments"; // Importa el componente de Khipu
 import Chats from "./pages/Chats"
+>>>>>>> RamaKevin
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
 
@@ -70,6 +75,9 @@ const App: React.FC = () => (
         </Route>
         <Route exact path="/register">
           <Register />
+        </Route>
+        <Route exact path="/register-number">
+          <RegisterNumber />
         </Route>
         <Route exact path="/register-form-google">
           <RegistarFormGoogle />

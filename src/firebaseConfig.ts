@@ -1,8 +1,22 @@
 import { initializeApp } from "firebase/app";
+<<<<<<< HEAD
+import { getFirestore } from "firebase/firestore";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signInWithPhoneNumber,
+  RecaptchaVerifier,
+  signInWithPopup, GoogleAuthProvider
+} from "firebase/auth"; // Importa los módulos específicos para autenticación
+
+
+=======
 import { getFirestore, doc, addDoc, Timestamp} from "firebase/firestore";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 import { collection, getDocs, query, where, updateDoc} from "firebase/firestore";
+>>>>>>> RamaKevin
 const config = {
   apiKey: "AIzaSyBjdhCSMelJZCYJU-Ky6dwNdSSOTejBp6Y",
   authDomain: "prueba-aa0db.firebaseapp.com",
@@ -14,7 +28,33 @@ const config = {
 
 const app = initializeApp(config);
 export const db = getFirestore(app);
+<<<<<<< HEAD
+const auth = getAuth(app); // Obtén la instancia de autenticación
+
+// Inicializa la app y la autenticación de Firebase
+
+
+export const registerUserWithPhone = async (
+  phoneNumber: string,
+  appVerifier: RecaptchaVerifier
+) => {
+  try {
+    const confirmationResult = await signInWithPhoneNumber(
+      auth,
+      phoneNumber,
+      appVerifier
+    );
+    return confirmationResult;
+  } catch (error) {
+    console.error("Error en la autenticación con número telefónico:", error);
+    throw error;
+  }
+};
+
+export { auth, RecaptchaVerifier };
+=======
 export const auth = getAuth();
+>>>>>>> RamaKevin
 
 // Login con Google
 export async function googleLogin() {
@@ -50,8 +90,12 @@ export async function googleLogin() {
   }
 }
 
+<<<<<<< HEAD
+// Función para iniciar sesión
+=======
 
 // Iniciar sesión con email y contraseña
+>>>>>>> RamaKevin
 export async function loginUser(username: string, password: string) {
   const email = `${username}`;
   try {
