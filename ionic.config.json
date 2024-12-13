@@ -4,8 +4,9 @@
     "capacitor": {}
   },
   "type": "react-vite",
-  "ssl": {
-    "key": "./server-key.pem",
-    "cert": "./server-cert.pem"
+  "server": {
+    "ssl": true,
+    "sslKey": "./server-key.pem",
+    "sslCert": "./server-cert.pem"
   }
 }

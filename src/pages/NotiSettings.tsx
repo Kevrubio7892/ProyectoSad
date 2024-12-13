@@ -14,7 +14,7 @@ import {
   IonIcon
 } from '@ionic/react';
 import { notificationsOutline, chatbubblesOutline, peopleOutline } from 'ionicons/icons'; // Importa los íconos
-import '../styles/NotiSettings.css';
+import '../styles/NotiSettingsStyles.css';
 
 const NotificationsSettings = () => {
   // Función para recuperar el estado desde el Local Storage

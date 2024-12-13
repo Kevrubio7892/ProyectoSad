@@ -18,7 +18,7 @@ import {
 import { useHistory } from 'react-router-dom';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { camera, logOut } from 'ionicons/icons';
-import '../styles/Perfil.css';
+import '../styles/PerfilStyles.css';
 
 const AdminProfilePage = () => {
   const history = useHistory();

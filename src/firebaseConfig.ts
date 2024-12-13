@@ -1,4 +1,5 @@
 import { initializeApp } from "firebase/app";
+<<<<<<< HEAD
 import { getFirestore } from "firebase/firestore";
 import {
   getAuth,
@@ -10,6 +11,12 @@ import {
 } from "firebase/auth"; // Importa los módulos específicos para autenticación
 
 
+=======
+import { getFirestore, doc, addDoc, Timestamp} from "firebase/firestore";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { FirebaseError } from "firebase/app";
+import { collection, getDocs, query, where, updateDoc} from "firebase/firestore";
+>>>>>>> RamaKevin
 const config = {
   apiKey: "AIzaSyBjdhCSMelJZCYJU-Ky6dwNdSSOTejBp6Y",
   authDomain: "prueba-aa0db.firebaseapp.com",
@@ -19,8 +26,9 @@ const config = {
   appId: "1:657792321743:web:25e8e626618662d46c0fba"
 };
 
-const app = initializeApp(config); // Inicializa la app de Firebase
+const app = initializeApp(config);
 export const db = getFirestore(app);
+<<<<<<< HEAD
 const auth = getAuth(app); // Obtén la instancia de autenticación
 
 // Inicializa la app y la autenticación de Firebase
@@ -44,28 +52,55 @@ export const registerUserWithPhone = async (
 };
 
 export { auth, RecaptchaVerifier };
+=======
+export const auth = getAuth();
+>>>>>>> RamaKevin
 
+// Login con Google
 export async function googleLogin() {
   const provider = new GoogleAuthProvider();
   try {
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
+
+    // Verifica si ya existe un documento para este usuario
+    const estudiantesRef = collection(db, "Estudiantes");
+    const q = query(estudiantesRef, where("email", "==", user.email));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      // Si no existe el usuario, crea uno nuevo
+      const newEstudiante = {
+        email: user.email,
+        nombreCompleto: user.displayName || "",
+        providerId: user.providerId,
+        fechaRegistro: Timestamp.now(),
+      };
+      await addDoc(estudiantesRef, newEstudiante);
+      console.log("Usuario registrado en Firestore:", newEstudiante);
+    } else {
+      console.log("Usuario ya registrado en Firestore.");
+    }
+
     console.log("Inicio de sesión exitoso con Google", user);
-    return true; // Puedes redirigir al usuario a otra página o almacenar su información
+    return { success: true, email: user.email };
   } catch (error) {
     console.error("Error al iniciar sesión con Google:", error);
-    return false;
+    return { success: false, error };
   }
 }
 
+<<<<<<< HEAD
 // Función para iniciar sesión
+=======
+
+// Iniciar sesión con email y contraseña
+>>>>>>> RamaKevin
 export async function loginUser(username: string, password: string) {
   const email = `${username}`;
-  const auth = getAuth(); // Obtiene la instancia de autenticación
-
   try {
     const res = await signInWithEmailAndPassword(auth, email, password);
-    console.log(res);
+    console.log("Inicio de sesión exitoso:", res);
     return true;
   } catch (error) {
     console.error("Error al iniciar sesión:", error);
@@ -73,27 +108,150 @@ export async function loginUser(username: string, password: string) {
   }
 }
 
-// Función para registrar usuario
-import { FirebaseError } from "firebase/app"; // Asegúrate de importar FirebaseError
-
+// Registrar usuario con email y contraseña
 export async function registerUser(username: string, password: string) {
   const email = `${username}`.trim();
-  const auth = getAuth();
-
   try {
     const res = await createUserWithEmailAndPassword(auth, email, password);
     console.log("Registro exitoso:", res);
     return true;
   } catch (error) {
-    const firebaseError = error as FirebaseError; // Aquí se hace la afirmación de tipo
-    console.error(
-      "Error al registrar usuario:",
-      firebaseError.code,
-      firebaseError.message
-    );
+    const firebaseError = error as FirebaseError;
+    console.error("Error al registrar usuario:", firebaseError.code, firebaseError.message);
     return false;
   }
-
-  
 }
+
+// Obtener datos del usuario desde Firestore
+export const getUserData = async (userEmail: string) => {
+  try {
+    const estudiantesRef = collection(db, "Estudiantes");
+    const q = query(estudiantesRef, where("email", "==", userEmail));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const userDoc = querySnapshot.docs[0]; // Toma el primer documento que coincida
+      return userDoc.data();
+    } else {
+      console.error("No se encontraron datos para el email:", userEmail);
+    }
+  } catch (error) {
+    console.error("Error al obtener datos del usuario:", error);
+  }
+  return null;
+};
+
+// Actualiza la descripción del usuario
+export const updateUserDescription = async (userEmail: string, newDescription: string) => {
+  try {
+    const estudiantesRef = collection(db, "Estudiantes");
+    const q = query(estudiantesRef, where("email", "==", userEmail));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const userDoc = querySnapshot.docs[0]; // Toma el primer documento que coincida
+      const userDocRef = userDoc.ref;
+      
+      // Actualiza el campo 'descripcion' en Firestore
+      await updateDoc(userDocRef, {
+        descripcion: newDescription,
+      });
+      console.log("Descripción actualizada correctamente.");
+    } else {
+      console.error("No se encontró el documento para este usuario.");
+    }
+  } catch (error) {
+    console.error("Error al actualizar la descripción:", error);
+  }
+};
+
+// Actualiza la URL de Instagram del usuario
+export const updateInstagramUrl = async (userEmail: string, instagramUrl: string) => {
+  try {
+    const estudiantesRef = collection(db, "Estudiantes");
+    const q = query(estudiantesRef, where("email", "==", userEmail));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const userDoc = querySnapshot.docs[0]; // Toma el primer documento que coincida
+      const userDocRef = userDoc.ref;
+
+      // Actualiza el campo 'instagram' en Firestore
+      await updateDoc(userDocRef, {
+        instagram: instagramUrl,
+      });
+      console.log("URL de Instagram actualizada correctamente.");
+    } else {
+      console.error("No se encontró el documento para este usuario.");
+    }
+  } catch (error) {
+    console.error("Error al actualizar la URL de Instagram:", error);
+  }
+};
+
+// Actualiza la foto de perfil del usuario en Firestore
+export const updateProfilePhoto = async (userEmail: string, photoDataUrl: string) => {
+  try {
+    const estudiantesRef = collection(db, "Estudiantes");
+    const q = query(estudiantesRef, where("email", "==", userEmail));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const userDoc = querySnapshot.docs[0]; // Toma el primer documento que coincida
+      const userDocRef = userDoc.ref;
+
+      // Actualiza el campo 'photoUrl' en Firestore
+      await updateDoc(userDocRef, {
+        photoUrl: photoDataUrl, // Guarda la imagen en formato base64
+      });
+      console.log("Foto de perfil actualizada correctamente en Firestore.");
+    } else {
+      console.error("No se encontró el documento para este usuario.");
+    }
+  } catch (error) {
+    console.error("Error al actualizar la foto de perfil:", error);
+  }
+};
+
+export const addLike = async (fromUserId: string, toUserId: string) => {
+  try {
+    // Referencia a la subcolección LIKES del estudiante que recibe el Check
+    const likesCollectionRef = collection(db, "Estudiantes", toUserId, "LIKES");
+
+    // Crear el documento del like 
+    const likeData = {
+      fromUserId,
+      toUserId,
+      isSuperLike: false, //
+      timestamp: Timestamp.now(),
+    };
+
+    await addDoc(likesCollectionRef, likeData);
+    console.log("Like registrado correctamente:", likeData);
+  } catch (error) {
+    console.error("Error al registrar el like:", error);
+  }
+};
+
+export const addDislike = async (fromUserId: string, toUserId: string) => {
+  try {
+    // Referencia a la subcolección LIKES del estudiante que recibe el Check
+    const DislikesCollectionRef = collection(db, "Estudiantes", toUserId, "DISLIKES");
+
+    
+    const DislikeData = {
+      fromUserId,
+      toUserId,
+      isSuperLike: false, //
+      timestamp: Timestamp.now(),
+    };
+
+    await addDoc(DislikesCollectionRef, DislikeData);
+    console.log("Dislike registrado correctamente:", DislikeData);
+  } catch (error) {
+    console.error("Error al registrar el dislike:", error);
+  }
+};
+
+
 

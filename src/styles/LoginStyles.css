@@ -29,6 +29,7 @@
   /* Optional transparency */
 }
 
+<<<<<<< HEAD:src/styles/Login.css
 .background-logo-sad {
   position: static;
   /* Positioned behind other elements */
@@ -158,3 +159,92 @@
   border-radius: 10px;
   /* Bordes redondeados */
 }
+=======
+  .error-text {
+    color: #ffffff;
+    margin-bottom: 10px;
+    display: grid; /* Habilita Grid */
+    place-items: center; /* Centra horizontal y verticalmente */
+    width: 100%; /* Asegúrate de que ocupe todo el ancho del contenedor */
+  }
+  
+  .terms-text {
+    color: #FFFFFF;
+    font-size: 12px;
+    text-align: center;
+    margin: 10px 0;
+    padding-left: 50px;
+    padding-right: 50px;
+  }
+  
+  .login-button {
+    padding: 10px 30px; /* Aumenta el padding superior e inferior */
+    --border-radius: 10px;
+    margin: 10px 0px;
+    width: 100%;
+    --background: #19436E;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 18px; /* Aumenta el tamaño de la fuente */
+    --padding-top: 20px;
+    --padding-bottom: 20px;
+}
+  
+  .login-button .ion-btn-text {
+    color: #FFFFFF;
+    font-size: 13px;
+    font-weight: bolder;
+    text-align: center;
+  }
+  
+  .button-container {
+    display: flex; /* Flexbox para disposición horizontal */
+    align-items: center; /* Centra los botones horizontalmente */
+    width: 50%; /* Ajusta según sea necesario */
+    margin: auto;
+    gap: 1px; /* Ajusta el espacio entre los iconos aquí */
+}
+
+.icon-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1px;
+    margin: 0; /* Asegúrate de que no haya margen adicional */
+}
+
+  
+  .forgot-password-text {
+    color: #FFFFFF;
+    font-size: 14px;
+    margin-top: 5px;
+    text-align: center;
+    margin-bottom: 100px;
+  }
+  
+  .register-text {
+    text-align: center;
+    margin-top: 15px; /* Añade un poco de espacio por encima */
+    font-size: 14px;
+    color: #19436E; /* Un tono de azul que resalta */
+  }
+  
+  .register-text:hover {
+    text-decoration: underline;
+    color: lighter; /* Cambia a un tono más oscuro en hover */
+    cursor: pointer;
+  }
+  
+  /* Definimos los estilos del loading */
+.custom-loading .loading-wrapper {
+  background-color: #FFFFFF; /* Fondo oscuro */
+  border-radius: 10px; /* Bordes redondeados */
+}
+
+.bg-logo-sad-reg{
+  position: static; /* Positioned behind other elements */
+  top: 1%; /* Adjust for your layout */
+  width: 150px; /* Adjust size as needed */
+  height: 150px; /* Adjust size as needed */
+  margin: auto;
+}
+>>>>>>> RamaKevin:src/styles/LoginStyles.css

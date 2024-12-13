@@ -2,7 +2,7 @@ import { Redirect, Route } from "react-router-dom";
 import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import Home from "./pages/Home";
-import Login from "./pages/Login"; // Importa la página de Login
+import Login from "./pages/Login";
 import NotiSettings from "./pages/NotiSettings";
 import Opciones from "./pages/Opciones";
 import Perfil from "./pages/Perfil";
@@ -11,8 +11,16 @@ import Privacidad from "./pages/PrivacySettings";
 import Admin from "./pages/Admin";
 import AdminPerfil from "./pages/AdminPerfil";
 import Register from "./pages/Register";
+<<<<<<< HEAD
 import RegisterNumber from "./pages/RegisterNumber";
 import RegistarFormGoogle from "./pages/RegisterFormGoogle"
+=======
+import RegistarFormGoogle from "./pages/RegisterFormGoogle";
+import CarreraSetup from "./pages/CarreraSetup"; // Importa el componente temporal
+import GeneroSetup from "./pages/GeneroSetup"; // Importa el componente temporal
+import KhipuPayment from "./components/KhipuPayments"; // Importa el componente de Khipu
+import Chats from "./pages/Chats"
+>>>>>>> RamaKevin
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
 
@@ -74,6 +82,21 @@ const App: React.FC = () => (
         <Route exact path="/register-form-google">
           <RegistarFormGoogle />
         </Route>
+        <Route exact path="/chats">
+          <Chats />
+        </Route>
+        <Route exact path="/cargar-carreras">
+          <CarreraSetup />
+        </Route>
+        <Route exact path="/cargar-generos">
+          <GeneroSetup />
+        </Route>
+
+        {/* Nueva Ruta para la integración de Khipu */}
+        <Route exact path="/pago">
+          <KhipuPayment />
+        </Route>
+
         {/* Redirige desde la ruta raíz a la página de login */}
         <Route exact path="/">
           <Redirect to="/login" />

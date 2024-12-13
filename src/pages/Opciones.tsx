@@ -11,10 +11,11 @@ import {
   IonItem,
   IonLabel,
   IonTextarea,
+  IonButton,
   IonIcon,
+  IonAlert,
 } from "@ionic/react";
 import {
-  personCircle,
   notifications,
   lockClosed,
   logoInstagram,
@@ -22,17 +23,27 @@ import {
   logOut,
   refresh,
 } from "ionicons/icons";
+<<<<<<< HEAD
 import { useHistory, useLocation } from "react-router";
 import "../styles/Opciones.css";
 import InstagramLogin from "./IgLogin";
+=======
+import { useHistory } from "react-router";
+import { onAuthStateChanged } from "firebase/auth";
+import { getUserData, auth, updateUserDescription, updateInstagramUrl } from "../firebaseConfig";
+import "../styles/OpcionesStyles.css";
+>>>>>>> RamaKevin
 
-const SettingsPage = () => {
+const SettingsPage: React.FC = () => {
   const [description, setDescription] = useState("");
-  const [instagramName, setInstagramName] = useState<string | null>(null);
+  const [instagramUrl, setInstagramUrl] = useState<string | null>(null);
+  const [instagramUsername, setInstagramUsername] = useState<string | null>(null);
+  const [userData, setUserData] = useState<any>(null);
+  const [showInstagramAlert, setShowInstagramAlert] = useState(false);
   const maxDescriptionLength = 100;
   const history = useHistory();
-  const location = useLocation();
 
+<<<<<<< HEAD
   const clientId = "1764117657748954"; // Tu Client ID de Instagram
   const clientSecret = "8a8379cd6015f037ecd896b8fb217f6c"; // Tu Client Secret de Instagram
   const redirectUri =
@@ -89,8 +100,53 @@ const SettingsPage = () => {
         .catch((error) =>
           console.error("Error al obtener el perfil de Instagram", error)
         );
+=======
+  const handleDescriptionChange = (e: any) => {
+    setDescription(e.target.value);
+  };
+
+  const handleSaveDescription = async () => {
+    if (userData) {
+      await updateUserDescription(userData.email, description);
+>>>>>>> RamaKevin
     }
-  }, [location.search, history]);
+  };
+
+  const handleInstagramLinkClick = () => {
+    setShowInstagramAlert(true);
+  };
+
+  const handleInstagramUrlSave = async (url: string) => {
+    setInstagramUrl(url);
+    const username = extractInstagramUsername(url);
+    setInstagramUsername(username);
+
+    if (userData && userData.email) {
+      await updateInstagramUrl(userData.email, url);
+    }
+
+    setShowInstagramAlert(false);
+  };
+
+  const extractInstagramUsername = (url: string) => {
+    const username = url.split("instagram.com/")[1];
+    return username ? username.replace("/", "") : null;
+  };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user && user.email) {
+        const data = await getUserData(user.email);
+        if (data) {
+          setUserData(data);
+          setDescription(data.descripcion || "");
+          setInstagramUrl(data.instagram || "");
+          setInstagramUsername(extractInstagramUsername(data.instagram || ""));
+        }
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   const instagramAuthUrl = `https://api.instagram.com/oauth/authorize
   ?client_id=1084662546664405
@@ -116,12 +172,18 @@ const SettingsPage = () => {
       <IonContent>
         <div className="profile-container">
           <img
-            src="https://image.europafm.com/clipping/cmsimages01/2022/09/28/2FAC71CF-4762-49D3-AA69-B1154B85D5D1/maria-becerra_104.jpg?crop=2457,2457,x476,y0&width=1200&height=1200&optimize=low&format=webply"
+            src={userData?.photoUrl || "https://via.placeholder.com/150"} // Usar la foto de perfil si está disponible
             alt="Profile"
             className="profile-image"
           />
-          <h2 className="profile-name">Jenny Nails</h2>
-          <p>Técnico Veterinario</p>
+          {userData ? (
+            <>
+              <h2 className="profile-name">{userData.nombreCompleto}</h2>
+              <p>{userData.carrera}</p>
+            </>
+          ) : (
+            <p>Cargando datos del usuario o no se encontraron datos.</p>
+          )}
         </div>
 
         <IonList>
@@ -133,12 +195,15 @@ const SettingsPage = () => {
               placeholder="Ingrese su descripción"
               maxlength={maxDescriptionLength}
               value={description}
-              onIonChange={(e) => setDescription(e.target.value || "")}
+              onIonChange={handleDescriptionChange}
             ></IonTextarea>
           </IonItem>
           <IonItem lines="none" className="description-counter">
             {description.length}/{maxDescriptionLength}
           </IonItem>
+          <IonButton expand="block" onClick={handleSaveDescription} className="edit-button">
+            Guardar
+          </IonButton>
         </IonList>
 
         <IonList>
@@ -154,11 +219,15 @@ const SettingsPage = () => {
             <IonIcon slot="start" icon={lockClosed} />
             <IonLabel>Privacidad de la cuenta</IonLabel>
           </IonItem>
+<<<<<<< HEAD
           <IonItem button onClick={handleInstagramLogin} />
           <IonItem button onClick={handleLinkInstagram}>
+=======
+          <IonItem button onClick={handleInstagramLinkClick}>
+>>>>>>> RamaKevin
             <IonIcon slot="start" icon={logoInstagram} />
             <IonLabel>Vincular Instagram</IonLabel>
-            {instagramName && <IonLabel slot="end">{instagramName}</IonLabel>}
+            {instagramUsername && <IonLabel slot="end">@{instagramUsername}</IonLabel>}
           </IonItem>
 
           {/* Aquí se agrega el botón para vincular Instagram */}
@@ -172,6 +241,38 @@ const SettingsPage = () => {
             <IonLabel>Cerrar sesión</IonLabel>
           </IonItem>
         </IonList>
+
+        <IonAlert
+          isOpen={showInstagramAlert}
+          onDidDismiss={() => setShowInstagramAlert(false)}
+          header={"Vincular Instagram"}
+          message={
+            "Para obtener el enlace de tu perfil de Instagram, abre Instagram, ve a tu perfil y copia la URL que aparece en la barra de direcciones. Por ejemplo, 'https://www.instagram.com/tuusuario'"
+          }
+          inputs={[
+            {
+              name: "instagramUrl",
+              type: "url",
+              placeholder: "https://www.instagram.com/tuusuario",
+              value: instagramUrl || "",
+            },
+          ]}
+          buttons={[
+            {
+              text: "Cancelar",
+              role: "cancel",
+              handler: () => {
+                setShowInstagramAlert(false);
+              },
+            },
+            {
+              text: "Guardar",
+              handler: (data) => {
+                handleInstagramUrlSave(data.instagramUrl);
+              },
+            },
+          ]}
+        />
       </IonContent>
     </IonPage>
   );

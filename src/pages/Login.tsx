@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useState } from "react";
 import {
   IonPage,
@@ -16,6 +17,16 @@ import "../styles/Login.css";
 import logo from "../assets/logo.png";
 import logo_SAD from "../assets/logo_SAD.png";
 import { loginUser, googleLogin } from "../firebaseConfig";
+=======
+import React, { useState } from 'react';
+import { IonPage, IonContent, IonButton, IonInput, IonText, IonIcon, IonImg, IonLoading } from '@ionic/react';
+import { logoGoogle, logoApple, callOutline } from 'ionicons/icons';
+import { useHistory } from 'react-router-dom';
+import '../styles/LoginStyles.css';
+import logo from '../assets/logo.png';
+import logo_SAD from '../assets/logo_SAD.png';
+import { loginUser, googleLogin } from '../firebaseConfig';
+>>>>>>> RamaKevin
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -27,7 +38,7 @@ const Login: React.FC = () => {
 
   const handleLogin = async () => {
     setShowLoading(true);  // Mostrar el loading
-
+    
     let isValid = true;
 
     if (password.length < 6) {
@@ -43,7 +54,7 @@ const Login: React.FC = () => {
         alert("Inicio de sesión exitoso");
         history.push("/tarjetas");
         alert('Inicio de sesión exitoso');
-        history.push('/register-form-google');
+        history.push('/tarjetas'); // Redirige a tarjetas después de inicio de sesión exitoso
       } else {
         setPasswordError("Error en las credenciales de inicio de sesión.");
       }
@@ -53,16 +64,22 @@ const Login: React.FC = () => {
   };
 
   const handleGoogleLogin = async () => {
-    setShowLoading(true);  // Mostrar el loading
-
-    const success = await googleLogin();
-    if (success) {
-      history.push('/register-form-google'); // Redirigir al usuario después de iniciar sesión
+    setShowLoading(true); // Mostrar el loading
+  
+    const result = await googleLogin();
+    if (result.success) {
+      const email = result.email;
+      // Redirige al formulario con la dirección de correo electrónico
+      history.push({
+        pathname: '/register-form-google',
+        state: { email }, // Pasa el email como estado a la vista de registro
+      });
       alert('Inicio de sesión exitoso');
     } else {
       alert('Error al iniciar sesión con Google');
     }
   
+<<<<<<< HEAD
     setShowLoading(false);  // Ocultar el loading al terminar
 
   };
@@ -72,7 +89,11 @@ const Login: React.FC = () => {
     };
   const handleAppleLogin = () => {
     console.log("Iniciar sesión con Apple");
+=======
+    setShowLoading(false); // Ocultar el loading al terminar
+>>>>>>> RamaKevin
   };
+  
 
   const handlePhoneLogin = () => {
     console.log("Iniciar sesión con el teléfono");
@@ -129,6 +150,7 @@ const Login: React.FC = () => {
         </IonButton>
 
         <div className="button-container">
+<<<<<<< HEAD
           <IonButton
             fill="clear"
             className="icon-button"
@@ -142,6 +164,9 @@ const Login: React.FC = () => {
             className="icon-button"
             onClick={handleGoogleLogin}
           >
+=======
+          <IonButton fill="clear" className="icon-button" onClick={handleGoogleLogin}>
+>>>>>>> RamaKevin
             <IonIcon icon={logoGoogle} size="large" color="light" />
           </IonButton>
 
@@ -167,12 +192,19 @@ const Login: React.FC = () => {
 
         <div className="forgot-password-text">
           <IonText
+<<<<<<< HEAD
             className="forgot-password-text"
             onClick={() => history.push("/notificaciones")}
             color="primary"
             style={{ cursor: "pointer" }}
+=======
+          className="forgot-password-text"
+          onClick={() => history.push('/forgot-password')}
+          color="primary"
+          style={{ cursor: 'pointer' }}
+>>>>>>> RamaKevin
           >
-            ¿Olvidaste tu contraseña?
+          ¿Olvidaste tu contraseña?
           </IonText>
         </div>
 
