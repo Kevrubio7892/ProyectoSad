@@ -11,6 +11,26 @@
 # production
 /dist
 
+# Local Firebase state
+/.firebase/
+
+# Local environment and credentials
+.env*
+!.env.example
+/src/Claves.env
+/android/app/google-services.json
+/android/app/Reporte_Usuarios*.pdf
+*.key
+*.pem
+*.crt
+*.csr
+/ssl/
+*.jks
+*.keystore
+/android/local.properties
+/android/.gradle/
+/android/app/build/
+
 # misc
 .DS_Store
 .env.local

@@ -1,140 +1,182 @@
-import React from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
 import {
   IonPage,
+  IonContent,
   IonHeader,
   IonToolbar,
   IonTitle,
-  IonButtons,
   IonButton,
-  IonContent,
+  IonBackButton,
+  IonButtons,
   IonIcon,
   IonAlert,
-  
-} from '@ionic/react';
-import { logOut, person } from 'ionicons/icons';
-import { Bar } from 'react-chartjs-2';
-import 'chart.js/auto';
-import '../styles/AdminStyles.css';
+} from "@ionic/react";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
+import jsPDF from "jspdf";
+import "../styles/ModuleAdminStyles.css";
+import { personOutline, logOutOutline } from "ionicons/icons";
+import { useHistory } from "react-router";
+import { signOut } from "firebase/auth";
+import { auth } from "../firebaseConfig";
 
-const AdminPage: React.FC = () => {
-  const [showLogoutAlert, setShowLogoutAlert] = React.useState(false);
-  const history = useHistory();
+interface User {
+  id: string;
+  nombreCompleto: string;
+  telefono: string;
+  email: string;
+  tiempoSesion: number; // Tiempo total de sesión activa en horas
+  fechaRegistro: string;
+}
 
-  // Datos de ejemplo para la lista de usuarios
-  const users = [
-    { name: 'Kevin Rubio', phone: '946857892' },
-    { name: 'Edson Beltrán', phone: '947274412' },
-    { name: 'Vicente Vilches', phone: '927721472' },
-    { name: 'Jeanette Leonelli', phone: '921778127' },
-  ];
+const AdminDashboard: React.FC = () => {
+  const [users, setUsers] = useState<User[]>([]);
+  const [tiempoUsoPromedio, setTiempoUsoPromedio] = useState<number>(0); // Promedio del tiempo de uso
+  const [showLogoutAlert, setShowLogoutAlert] = useState(false); // Estado para el IonAlert
 
-  // Datos del gráfico de ejemplo
-  const data = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-    datasets: [
-      {
-        label: 'Reportes',
-        data: [120, 150, 200, 130, 140],
-        backgroundColor: '#00BFFF',
-      },
-    ],
+  const history = useHistory(); // Hook para la navegación
+
+  // Firebase Firestore
+  const db = getFirestore();
+
+  // Fetch Users and Usage Data from Firestore
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const usersCollection = collection(db, "Estudiantes");
+        const snapshot = await getDocs(usersCollection);
+
+        // Simula datos de tiempo de sesión por usuario
+        const usersList: User[] = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          nombreCompleto: doc.data().nombreCompleto || "N/A",
+          telefono: doc.data().telefono || "N/A",
+          email: doc.data().email || "N/A",
+          tiempoSesion: doc.data().tiempoSesion || Math.random() * 5, // Simulación de tiempo de uso entre 0 y 5 horas
+          fechaRegistro: doc.data().fechaRegistro || "N/A",
+        }));
+
+        setUsers(usersList);
+
+        // Calcula el tiempo de uso promedio
+        const totalTiempo = usersList.reduce(
+          (acc, user) => acc + user.tiempoSesion,
+          0
+        );
+        setTiempoUsoPromedio(totalTiempo / usersList.length || 0);
+      } catch (error) {
+        console.error("Error al obtener los usuarios:", error);
+      }
+    };
+
+    fetchUsers();
+  }, [db]);
+
+  // Generar PDF
+  const generatePDF = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(18);
+    doc.text("Reporte de Uso de la Aplicación", 20, 20);
+
+    // Usuarios registrados
+    doc.setFontSize(12);
+    doc.text(`Usuarios Registrados: ${users.length}`, 20, 30);
+
+    // Tiempo de uso promedio
+    doc.text(`Tiempo de Uso Promedio: ${tiempoUsoPromedio.toFixed(2)} horas`, 20, 40);
+
+    // Detalles de tiempo de sesión activa
+    doc.text("Tiempo de Sesión Activa por Usuario:", 20, 50);
+    users.forEach((user, index) => {
+      doc.text(
+        `${index + 1}. ${user.nombreCompleto} - ${user.tiempoSesion.toFixed(2)} hrs`,
+        20,
+        60 + index * 10
+      );
+    });
+
+    doc.save("Reporte_Usuarios.pdf");
   };
 
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      y: {
-        beginAtZero: true,
-        max: 250,
-      },
-    },
+  // Maneja la navegación a /admin-perfil
+  const handleAdminPerfil = () => {
+    history.push("/admin-perfil");
   };
 
-  const handleLogout = () => {
-    // Lógica para el cierre de sesión
-    console.log('Sesión cerrada');
-    history.push('/login');
+  // Maneja el cierre de sesión
+  const handleLogout = async () => {
+    try {
+      await signOut(auth); // Cerrar sesión en Firebase
+      window.location.href = "/login"; // Redirigir al login
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error);
+      alert("Hubo un problema al cerrar sesión. Inténtalo nuevamente.");
+    }
   };
 
   return (
     <IonPage>
-      <IonHeader>
-        <IonToolbar className="nav-container" color="danger">
-          <IonTitle>Administrador</IonTitle>
-          <IonButtons slot="start">
-            <IonButton onClick={() => history.push('/adminperfil')}>
-              <IonIcon icon={person} slot="icon-only" />
-            </IonButton>
-          </IonButtons>
-          <IonButtons slot="end">
-            <IonButton onClick={() => setShowLogoutAlert(true)}>
-              <IonIcon icon={logOut} slot="icon-only" />
-            </IonButton>
-          </IonButtons>
-        </IonToolbar>
-      </IonHeader>
-
-      <IonContent>
-        <div className="user-management-section">
-          <h2>Gestión de usuarios</h2>
-          <div className="user-table">
-            <table>
-              <thead>
-                <tr>
-                  <th>Foto perfil</th>
-                  <th>Usuario</th>
-                  <th>Teléfono</th>
-                  <th>Detalle</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((user, index) => (
-                  <tr key={index}>
-                    <td>
-                      <img
-                        src="https://via.placeholder.com/40"
-                        alt="profile"
-                        className="profile-icon"
-                      />
-                    </td>
-                    <td>{user.name}</td>
-                    <td>{user.phone}</td>
-                    <td>
-                      <IonButton color="warning" size="small">
-                        Ver detalles
-                      </IonButton>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div className="report-section">
-          <h2>Reportes</h2>
-          <div className="chart-container">
-            <Bar data={data} options={options} />
-          </div>
-          <IonButton expand="block" color="primary">
-            Generar reporte
+      <IonHeader className="header">
+        <IonButtons slot="start">
+          <IonButton color="light" onClick={handleAdminPerfil}>
+            <IonIcon icon={personOutline} size="large" />
           </IonButton>
+        </IonButtons>
+        <IonTitle className="centered-title">Administrador</IonTitle>
+        <IonButtons slot="end">
+          <IonButton color="light" onClick={() => setShowLogoutAlert(true)}>
+            <IonIcon icon={logOutOutline} size="large" />
+          </IonButton>
+        </IonButtons>
+      </IonHeader>
+      <IonContent className="admin-dashboard">
+        {/* Gestión de Usuarios */}
+        <div>
+          <h2 className="table-tittle">Gestión de Usuarios</h2>
+          <table className="user-management">
+            <thead>
+              <tr>
+                <th>Correo</th>
+                <th>Usuario</th>
+                <th>Teléfono</th>
+                <th>Tiempo de Sesión (hrs)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((user) => (
+                <tr key={user.id}>
+                  <td data-label="Correo">{user.email}</td>
+                  <td data-label="Usuario">{user.nombreCompleto}</td>
+                  <td data-label="Teléfono">{user.telefono}</td>
+                  <td data-label="Tiempo de Sesión">{user.tiempoSesion.toFixed(2)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
+        {/* Botón para Generar Reporte */}
+        <IonButton
+          className="generate-report-button"
+          expand="block"
+          onClick={generatePDF}
+          fill="clear"
+        >
+          Generar Reporte
+        </IonButton>
+
+        {/* Alert de Logout */}
         <IonAlert
           isOpen={showLogoutAlert}
           onDidDismiss={() => setShowLogoutAlert(false)}
-          header={'Cerrar sesión'}
-          message={'¿Desea cerrar su sesión?'}
+          header={"Cerrar sesión"}
+          message={"¿Estás seguro de que deseas cerrar sesión?"}
           buttons={[
             {
-              text: 'Cancelar',
-              role: 'cancel',
+              text: "Cancelar",
+              role: "cancel",
             },
             {
-              text: 'Aceptar',
+              text: "Cerrar sesión",
               handler: handleLogout,
             },
           ]}
@@ -144,4 +186,4 @@ const AdminPage: React.FC = () => {
   );
 };
 
-export default AdminPage;
+export default AdminDashboard;

@@ -1,13 +1,19 @@
 // services/firestoreService.ts
 import { db } from '../firebaseConfig';
-import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
+import { auth } from '../firebaseConfig';
+import { addDoc, collection, doc, getDocs, query, setDoc, where } from "firebase/firestore";
 
 // Función para registrar un estudiante
 export const registerEstudiante = async (data: any) => {
   try {
-    const docRef = await addDoc(collection(db, "Estudiantes"), data);
-    console.log("Estudiante registrado con ID: ", docRef.id);
-    return docRef.id;
+    const user = auth.currentUser;
+    if (!user) {
+      throw new Error("Se requiere una sesión autenticada para crear el perfil.");
+    }
+
+    await setDoc(doc(db, "Estudiantes", user.uid), { ...data, uid: user.uid });
+    console.log("Perfil de estudiante registrado:", user.uid);
+    return user.uid;
   } catch (error) {
     console.error("Error al registrar el estudiante: ", error);
     throw error;
@@ -124,3 +130,5 @@ export const getGeneros = async () => {
 
   return generosList;
 };
+
+export { db };

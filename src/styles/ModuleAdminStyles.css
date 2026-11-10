@@ -1,0 +1,149 @@
+/* Estilos para el encabezado */
+.header {
+  background: linear-gradient(to bottom, #DC2527, #FF5860); /* Fondo con degradado */
+}
+
+/* Centrar el título del encabezado */
+.centered-title {
+  text-align: center;
+  font-weight: bold;
+  color: white; /* Título blanco */
+  font-size: 1.5rem;
+  position: relative;
+  
+}
+
+/* Estilos generales para los botones */
+.header .ion-button {
+  display: inline-block;
+  align-items: center;
+  justify-content: center;
+}
+
+
+
+.admin-dashboard {
+  padding: 20px;
+  --background: linear-gradient(to bottom, #DC2527, #19436E); /* Fondo con degradado */
+  color: #ffffff; /* Texto blanco */
+}
+
+.user-management th,
+.user-management td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+  color: #ffffff; /* Color blanco */
+}
+
+.table-tittle{
+  color: #ddd;
+  text-align: center;
+}
+
+.report-tittle{
+  --color: #ddd;
+  text-align: center;
+}
+.user-management th {
+  background-color: #FF5860;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.user-management td {
+  background-color: #19436E; /* Rojo claro para las celdas */
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 10px; /* Bordes redondeados */
+  overflow:scroll; /* Ocultar desbordamiento en bordes redondeados */
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 5); /* Sombra para realzar la tabla */
+}
+
+th,
+td {
+  padding: 10px;
+  text-align: center;
+  border: 1px solid #ddd;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.ver-detalles-button {
+  background-color: #6e1941; /* Azul oscuro */
+  color: #ffffff; /* Texto blanco */
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.ver-detalles-button:hover {
+  background-color: #FF5860; /* Rojo claro al pasar el mouse */
+  color: #ffffff;
+}
+
+.usage-report {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.generate-report-button {
+  background: linear-gradient(to bottom, #DC2527, #FF5860);
+  color: white;
+  padding: 10px 10px;
+  width: 50%;
+  margin: auto;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 5); /* Sombra para el botón */
+}
+
+.generate-report-button:hover {
+  background: linear-gradient(to bottom, #DC2527, #19436E); /* Morado más claro al pasar el mouse */
+  transform: scale(1.05); /* Animación de aumento al pasar el mouse */
+}
+
+@media (max-width: 768px) {
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  thead {
+    display: none;
+  }
+
+  tr {
+    display: flex;
+    margin-bottom: 10px;
+  }
+
+  td {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 10px;
+    border: none;
+    border-bottom: 1px solid #ddd;
+    background-color: #FF5860;
+    color: #ffffff;
+  }
+
+  td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    margin-right: 10px;
+    color: white;
+  }
+}

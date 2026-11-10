@@ -1,0 +1,65 @@
+/* Login.css */
+.forgot-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centra verticalmente */
+    align-items: center; /* Centra horizontalmente */
+    --background: linear-gradient(to bottom, #DC2527, #FF5860);
+    padding: 20px;
+    height: 100vh; /* Llenar la altura completa del viewport */
+    position: relative; /* Para la posición absoluta de los logos */
+}
+
+.form-container{
+    margin-top: 20px;
+}
+  .input {
+    width: 90%;
+    height: 50px;
+    background-color: #FFFFFF;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 0 auto 10px auto; /* Centro horizontalmente con margen automático */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+  
+  .login-button {
+    padding: 10px 30px; /* Aumenta el padding superior e inferior */
+    --border-radius: 10px;
+    margin: 10px 0px;
+    width: 100%;
+    --background: #19436E;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 18px; /* Aumenta el tamaño de la fuente */
+    --padding-top: 20px;
+    --padding-bottom: 20px;
+}
+  
+  .login-button .ion-btn-text {
+    color: #FFFFFF;
+    font-size: 13px;
+    font-weight: bolder;
+    text-align: center;
+  }
+  
+  .button-container {
+    display: flex; /* Flexbox para disposición horizontal */
+    align-items: center; /* Centra los botones horizontalmente */
+    width: 50%; /* Ajusta según sea necesario */
+    margin: auto;
+    gap: 1px; /* Ajusta el espacio entre los iconos aquí */
+}
+
+.icon-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1px;
+    margin: 0; /* Asegúrate de que no haya margen adicional */
+}
+  
+  /* Definimos los estilos del loading */
+.custom-loading .loading-wrapper {
+  background-color: #FFFFFF; /* Fondo oscuro */
+  border-radius: 10px; /* Bordes redondeados */
+}

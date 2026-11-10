@@ -12,32 +12,56 @@ import {
   IonLabel,
   IonToggle,
   IonIcon,
-  IonAvatar
+  IonText,
+  IonNote,
 } from '@ionic/react';
 import { callOutline, locationOutline, eyeOffOutline } from 'ionicons/icons';
+import {
+  getStudentDiscoveryPreference,
+  updateStudentDiscoveryPreference,
+} from '../services/StudentSettingsService';
 import '../styles/PrivacySettingsStyles.css';
 
 const PrivacySettings = () => {
-  const getInitialToggleState = (key: string, defaultValue: boolean) => {
-    const savedState = localStorage.getItem(key);
-    return savedState !== null ? JSON.parse(savedState) : defaultValue;
+  const [isDiscoverable, setIsDiscoverable] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let active = true;
+    getStudentDiscoveryPreference()
+      .then((value) => {
+        if (active) setIsDiscoverable(value);
+      })
+      .catch((loadError: unknown) => {
+        console.error('Error al cargar las preferencias de privacidad:', loadError);
+        if (active) setError('No se pudo cargar tu preferencia de visibilidad.');
+      })
+      .finally(() => {
+        if (active) setIsLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const handleVisibilityChange = async (hidden: boolean) => {
+    const previousValue = isDiscoverable;
+    setIsDiscoverable(!hidden);
+    setIsSaving(true);
+    setError('');
+    try {
+      await updateStudentDiscoveryPreference('isDiscoverable', !hidden);
+    } catch (saveError: unknown) {
+      console.error('Error al guardar la preferencia de privacidad:', saveError);
+      setIsDiscoverable(previousValue);
+      setError('No se pudo guardar el cambio. Inténtalo nuevamente.');
+    } finally {
+      setIsSaving(false);
+    }
   };
-
-  const [syncContacts, setSyncContacts] = useState(() => getInitialToggleState('syncContacts', true));
-  const [locationAccess, setLocationAccess] = useState(() => getInitialToggleState('locationAccess', true));
-  const [hideProfile, setHideProfile] = useState(() => getInitialToggleState('hideProfile', true));
-
-  useEffect(() => {
-    localStorage.setItem('syncContacts', JSON.stringify(syncContacts));
-  }, [syncContacts]);
-
-  useEffect(() => {
-    localStorage.setItem('locationAccess', JSON.stringify(locationAccess));
-  }, [locationAccess]);
-
-  useEffect(() => {
-    localStorage.setItem('hideProfile', JSON.stringify(hideProfile));
-  }, [hideProfile]);
 
   return (
     <IonPage>
@@ -52,44 +76,33 @@ const PrivacySettings = () => {
 
       <IonContent>
         <IonList>
-          <IonItem lines="none" className="profile-item">
-            <IonAvatar slot="start">
-              <img src="path/to/profile-image.jpg" alt="Profile" /> {/* Reemplaza con la ruta de la imagen */}
-            </IonAvatar>
-            <IonLabel className="profile-label">
-              <h2>María Becerra</h2>
-              <p>Técnico en enfermería</p>
-            </IonLabel>
-          </IonItem>
 
           <IonItem lines="full" className="privacy-item">
             <IonIcon icon={callOutline} slot="start" /> {/* Icono de contactos */}
-            <IonLabel className="privacy-label">Permitir sincronizar contactos</IonLabel>
-            <IonToggle
-              checked={syncContacts}
-              onIonChange={(e) => setSyncContacts(e.detail.checked)}
-              slot="end"
-            />
+            <IonLabel className="privacy-label">Sincronización de contactos</IonLabel>
+            <IonText color="medium">No disponible</IonText>
           </IonItem>
           <IonItem lines="full" className="privacy-item">
             <IonIcon icon={locationOutline} slot="start" /> {/* Icono de ubicación */}
-            <IonLabel className="privacy-label">Acceso a la ubicación</IonLabel>
-            <IonToggle
-              checked={locationAccess}
-              onIonChange={(e) => setLocationAccess(e.detail.checked)}
-              slot="end"
-            />
+            <IonLabel className="privacy-label">Ubicación precisa</IonLabel>
+            <IonText color="medium">No disponible</IonText>
           </IonItem>
           <IonItem lines="full" className="privacy-item">
             <IonIcon icon={eyeOffOutline} slot="start" /> {/* Icono de ocultar perfil */}
-            <IonLabel className="privacy-label">Ocultar perfil</IonLabel>
+            <IonLabel className="privacy-label">Pausar aparición en el feed</IonLabel>
             <IonToggle
-              checked={hideProfile}
-              onIonChange={(e) => setHideProfile(e.detail.checked)}
+              checked={!isDiscoverable}
+              disabled={isLoading || isSaving}
+              onIonChange={(e) => { void handleVisibilityChange(e.detail.checked); }}
               slot="end"
             />
           </IonItem>
         </IonList>
+        <IonNote className="ion-padding">
+          Al pausar, el perfil se omite en el feed de la aplicación. La protección contra
+          accesos directos requiere reglas de seguridad de Firestore en el servidor.
+        </IonNote>
+        {error && <p role="alert">{error}</p>}
       </IonContent>
     </IonPage>
   );

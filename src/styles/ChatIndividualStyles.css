@@ -1,0 +1,111 @@
+.chat-page {
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f5f5; /* Fondo claro */
+}
+
+.chat-header {
+  --background: #ff4757 !important; /* Fondo rojo */
+  --color: white !important;
+  --display: flex !important;
+  --flex-direction: column !important; /* Cambiar a columna para alinear avatar y nombre */
+  --align-items: center !important; /* Centrar horizontalmente */
+  --justify-content: center !important; /* Centrar verticalmente */
+  --text-align: center !important; /* Alinear el texto al centro */
+  --padding: 10px !important; /* Añadir padding para un diseño más espacioso */
+}
+
+.chat-avatar {
+  --margin-bottom: 5px !important; /* Separación entre el avatar y el nombre */
+  margin: auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.chat-avatar img {
+  --border-radius: 50% !important; /* Redondear el avatar */
+  --width: 50px !important;
+  --height: 50px !important;
+}
+
+.chat-title {
+  --font-size: 1.2rem !important;
+  --font-weight: bold !important;
+  margin: auto;
+  text-align: center;
+}
+
+.messages-container {
+  padding: 10px;
+  flex-grow: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.empty-chat {
+  margin: auto;
+  padding: 24px;
+  color: #666;
+  text-align: center;
+}
+
+.message-bubble {
+  --width: auto !important; /* El ancho se ajusta automáticamente al contenido */
+  padding: 10px 15px; /* Espaciado interno */
+  margin: 5px 0;
+  font-size: 16px;
+  line-height: 1.5;
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  --word-wrap: break-word; /* Permite el ajuste de línea para mensajes largos */
+  --word-break: break-word; /* Maneja palabras largas */
+}
+
+.message-bubble.received {
+  align-self: flex-end; /* Mensajes enviados alineados a la derecha */
+  background-color: #7baa24; /* Azul brillante */
+  color: white; /* Texto blanco */
+  border-radius: 10px 10px 10px 0px; /* Redondeado más limpio */
+}
+
+.message-bubble.sent {
+  align-self: flex-start; /* Mensajes recibidos alineados a la izquierda */
+  background-color: #0a4ba0; /* Azul oscuro */
+  color: white; /* Texto claro */
+  border-radius: 10px 10px 0px 10px; /* Redondeado más limpio */
+}
+
+.message-input-container {
+  display: flex;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.35); /* Superposición oscura */
+  border-top: 1px solid #ccc;
+}
+
+.message-input {
+  flex-grow: 1;
+  margin-right: 10px;
+  border: none;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 10px;
+  background-color: #f1f1f1; /* Fondo claro */
+  color: #333; /* Texto oscuro */
+}
+
+.send-button {
+  background: #ff4757; /* Botón rojo */
+  --color: white;
+  padding: 0 15px;
+  width: 50%;
+  border-radius: 15px;
+  margin: auto;
+}
+
+.typing-indicator {
+  font-size: 14px;
+  color: #888;
+  margin: auto;
+  text-align: left;
+  font-style: italic;
+}

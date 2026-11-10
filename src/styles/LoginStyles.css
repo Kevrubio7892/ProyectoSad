@@ -187,6 +187,7 @@
     font-size: 18px; /* Aumenta el tamaño de la fuente */
     --padding-top: 20px;
     --padding-bottom: 20px;
+    color: #FFFFFF;
 }
   
   .login-button .ion-btn-text {
@@ -232,6 +233,20 @@
     text-decoration: underline;
     color: lighter; /* Cambia a un tono más oscuro en hover */
     cursor: pointer;
+  }
+
+  .phone-login-form {
+    position: relative;
+    z-index: 1;
+    width: 90%;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .phone-code-hint {
+    display: block;
+    color: #FFFFFF;
+    margin: 8px 0;
   }
   
   /* Definimos los estilos del loading */

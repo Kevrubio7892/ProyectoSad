@@ -8,7 +8,12 @@ import {
   IonSelectOption, 
   IonText, 
   IonImg, 
-  IonLoading 
+  IonLoading, 
+  IonHeader,
+  IonToolbar,
+  IonButtons,
+  IonBackButton,
+  IonTitle
 } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
 import '../styles/LoginStyles.css';
@@ -17,6 +22,8 @@ import logo_SAD from '../assets/logo_SAD.png';
 import { registerUser } from '../firebaseConfig'; // Para autenticación en Firebase
 import { registerEstudiante, getCarreras, getGeneros } from '../services/FireStoreServices';
 import { getAuth, fetchSignInMethodsForEmail } from "firebase/auth";
+import { normalizePhoneNumber } from '../utils/phoneNumber';
+import { isAdultOnDate, isDuocInstitutionalEmail } from '../utils/studentEligibility';
 const RegisterForm: React.FC = () => {
   const [formData, setFormData] = useState({
     nombre: '',
@@ -76,6 +83,21 @@ const RegisterForm: React.FC = () => {
       isValid = false;
       return isValid;
     }
+
+    if (!isDuocInstitutionalEmail(email)) {
+      setFormError('Usa tu correo institucional terminado en @duocuc.cl.');
+      return false;
+    }
+
+    if (!normalizePhoneNumber(formData.telefono)) {
+      setFormError('Ingresa el teléfono con código de país, por ejemplo +56912345678.');
+      return false;
+    }
+
+    if (!isAdultOnDate(formData.fechaNacimiento)) {
+      setFormError('Para usar esta comunidad debes tener al menos 18 años.');
+      return false;
+    }
   
     // Verificar si el correo ya está registrado
     const auth = getAuth();
@@ -114,10 +136,15 @@ const RegisterForm: React.FC = () => {
   
 
   const handleFormSubmit = async () => {
-    if (!validateForm()) return;
-
+    if (!(await validateForm())) return; // Validación
+    const phoneNumber = normalizePhoneNumber(formData.telefono);
+    if (!phoneNumber) {
+      setFormError('Ingresa el teléfono con código de país, por ejemplo +56912345678.');
+      return;
+    }
+  
     setShowLoading(true);
-
+  
     try {
       // Registro en Firebase Authentication
       const success = await registerUser(formData.email, formData.contrasena);
@@ -125,7 +152,7 @@ const RegisterForm: React.FC = () => {
         setFormError('Error en el registro. Intente nuevamente.');
         return;
       }
-
+  
       // Guardar información adicional en Firestore
       const formDataToSubmit = {
         nombreCompleto: `${formData.nombre} ${formData.apellido}`,
@@ -135,16 +162,32 @@ const RegisterForm: React.FC = () => {
         sedeAcademica: formData.sedeAcademica,
         fechaNacimiento: formData.fechaNacimiento,
         fechaRegistro: new Date().toISOString(),
-        telefono: formData.telefono,
+        telefono: phoneNumber,
         email: formData.email,
-        confirmContrasena: formData.contrasena
+        role: "Estudiante", // Añadir el rol de Estudiante
       };
-
+  
       const docId = await registerEstudiante(formDataToSubmit);
       console.log("Estudiante registrado con ID: ", docId);
-
+  
+      // Limpiar el formulario
+      setFormData({
+        nombre: '',
+        apellido: '',
+        anioEstudio: '',
+        carrera: '',
+        genero: '',
+        sedeAcademica: 'Duoc UC Puente Alto',
+        fechaNacimiento: '',
+        telefono: '',
+        email: '',
+        contrasena: '',
+        confirmContrasena: '',
+      });
+  
+      setFormError(''); // Limpia los errores
       alert('Registro exitoso');
-      history.push('/login'); // Redirigir a la página de inicio de sesión
+      history.push('/seleccionar-foto'); // Redirigir
     } catch (error) {
       console.error("Error al guardar los datos en Firestore: ", error);
       setFormError('Hubo un problema al enviar los datos. Intente nuevamente.');
@@ -152,9 +195,21 @@ const RegisterForm: React.FC = () => {
       setShowLoading(false);
     }
   };
+  
+  
+  
 
   return (
     <IonPage>
+      <IonHeader>
+        <IonToolbar color="danger">
+          <IonButtons slot="start">
+            <IonBackButton />
+          </IonButtons>
+          <IonTitle>Registrarse</IonTitle>
+        </IonToolbar>
+      </IonHeader>
+
       <IonContent className="login-content" fullscreen>
         <IonImg src={logo} className="background-logo" />
         <IonImg src={logo_SAD} className="bg-logo-sad-reg" />
@@ -207,7 +262,7 @@ const RegisterForm: React.FC = () => {
             label="Teléfono"
             fill="solid"
             labelPlacement="floating"
-            placeholder="Ingresa un teléfono"
+            placeholder="+56912345678"
             name="telefono" 
             value={formData.telefono} 
             onIonChange={handleInputChange}

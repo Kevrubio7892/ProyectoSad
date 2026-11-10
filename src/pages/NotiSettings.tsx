@@ -11,7 +11,8 @@ import {
   IonItem,
   IonLabel,
   IonToggle,
-  IonIcon
+  IonIcon,
+  IonNote,
 } from '@ionic/react';
 import { notificationsOutline, chatbubblesOutline, peopleOutline } from 'ionicons/icons'; // Importa los íconos
 import '../styles/NotiSettingsStyles.css';
@@ -87,6 +88,10 @@ const NotificationsSettings = () => {
             />
           </IonItem>
         </IonList>
+        <IonNote className="ion-padding">
+          Estos avisos aparecen dentro de la app mientras la pantalla de matches y chats
+          está abierta. Las notificaciones push aún no están configuradas.
+        </IonNote>
       </IonContent>
     </IonPage>
   );

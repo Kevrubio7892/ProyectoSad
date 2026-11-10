@@ -7,6 +7,9 @@ import logo_SAD from '../assets/logo_SAD.png';
 import { collection, query, where, getDocs, updateDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { getCarreras, getGeneros } from '../services/FireStoreServices';
+import { normalizePhoneNumber } from '../utils/phoneNumber';
+import { auth } from '../firebaseConfig';
+import { isAdultOnDate, isDuocInstitutionalEmail } from '../utils/studentEligibility';
 
 const RegisterForm: React.FC = () => {
   const location = useLocation<{ email: string }>();
@@ -52,6 +55,21 @@ const RegisterForm: React.FC = () => {
       return;
     }
 
+    if (!isDuocInstitutionalEmail(email) || !auth.currentUser?.emailVerified) {
+      setFormError('Se requiere una cuenta Google verificada con correo @duocuc.cl.');
+      return;
+    }
+    if (!isAdultOnDate(formData.fechaNacimiento)) {
+      setFormError('Para usar esta comunidad debes tener al menos 18 años.');
+      return;
+    }
+
+    const normalizedPhone = normalizePhoneNumber(formData.telefono);
+    if (!normalizedPhone) {
+      setFormError('Ingresa el teléfono con código de país, por ejemplo +56912345678.');
+      return;
+    }
+
     setShowLoading(true);
 
     try {
@@ -66,12 +84,13 @@ const RegisterForm: React.FC = () => {
 
         // Actualizar el documento existente con los datos del formulario
         await updateDoc(userDocRef, {
-          telefono: formData.telefono,
+          telefono: normalizedPhone,
           anioEstudio: parseInt(formData.anioEstudio) || 0,
           carrera: formData.carrera,
           genero: formData.genero,
           sedeAcademica: formData.sedeAcademica,
           fechaNacimiento: formData.fechaNacimiento,
+          role: "Estudiante"
         });
         alert('Datos enviados correctamente');
         history.push('/tarjetas');
@@ -99,7 +118,7 @@ const RegisterForm: React.FC = () => {
             label="Teléfono"
             fill="solid"
             labelPlacement="floating"
-            placeholder="Ingresa tu número de teléfono"
+            placeholder="+56912345678"
             name="telefono"
             value={formData.telefono}
             onIonChange={handleInputChange}

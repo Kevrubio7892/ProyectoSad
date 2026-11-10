@@ -1,22 +1,9 @@
 import { initializeApp } from "firebase/app";
-<<<<<<< HEAD
-import { getFirestore } from "firebase/firestore";
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signInWithPhoneNumber,
-  RecaptchaVerifier,
-  signInWithPopup, GoogleAuthProvider
-} from "firebase/auth"; // Importa los módulos específicos para autenticación
-
-
-=======
-import { getFirestore, doc, addDoc, Timestamp} from "firebase/firestore";
+import { getFirestore, doc, addDoc, Timestamp, setDoc} from "firebase/firestore";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 import { collection, getDocs, query, where, updateDoc} from "firebase/firestore";
->>>>>>> RamaKevin
+import { getDatabase, ref, set, onValue, push } from "firebase/database"; // Importa Realtime Database
 const config = {
   apiKey: "AIzaSyBjdhCSMelJZCYJU-Ky6dwNdSSOTejBp6Y",
   authDomain: "prueba-aa0db.firebaseapp.com",
@@ -28,34 +15,8 @@ const config = {
 
 const app = initializeApp(config);
 export const db = getFirestore(app);
-<<<<<<< HEAD
-const auth = getAuth(app); // Obtén la instancia de autenticación
-
-// Inicializa la app y la autenticación de Firebase
-
-
-export const registerUserWithPhone = async (
-  phoneNumber: string,
-  appVerifier: RecaptchaVerifier
-) => {
-  try {
-    const confirmationResult = await signInWithPhoneNumber(
-      auth,
-      phoneNumber,
-      appVerifier
-    );
-    return confirmationResult;
-  } catch (error) {
-    console.error("Error en la autenticación con número telefónico:", error);
-    throw error;
-  }
-};
-
-export { auth, RecaptchaVerifier };
-=======
 export const auth = getAuth();
->>>>>>> RamaKevin
-
+export const rtdb = getDatabase(app); // Inicializa Realtime Database
 // Login con Google
 export async function googleLogin() {
   const provider = new GoogleAuthProvider();
@@ -76,13 +37,12 @@ export async function googleLogin() {
         providerId: user.providerId,
         fechaRegistro: Timestamp.now(),
       };
-      await addDoc(estudiantesRef, newEstudiante);
-      console.log("Usuario registrado en Firestore:", newEstudiante);
-    } else {
-      console.log("Usuario ya registrado en Firestore.");
+      await setDoc(doc(db, "Estudiantes", user.uid), {
+        ...newEstudiante,
+        uid: user.uid,
+      });
     }
 
-    console.log("Inicio de sesión exitoso con Google", user);
     return { success: true, email: user.email };
   } catch (error) {
     console.error("Error al iniciar sesión con Google:", error);
@@ -90,12 +50,8 @@ export async function googleLogin() {
   }
 }
 
-<<<<<<< HEAD
-// Función para iniciar sesión
-=======
 
 // Iniciar sesión con email y contraseña
->>>>>>> RamaKevin
 export async function loginUser(username: string, password: string) {
   const email = `${username}`;
   try {
@@ -254,4 +210,147 @@ export const addDislike = async (fromUserId: string, toUserId: string) => {
 };
 
 
+export const getUserRoleFromCollections = async (userEmail: string): Promise<string | null> => {
+  try {
+    // Verificar en la colección "Estudiantes"
+    const estudiantesRef = collection(db, "Estudiantes");
+    const estudianteQuery = query(estudiantesRef, where("email", "==", userEmail));
+    const estudianteSnapshot = await getDocs(estudianteQuery);
 
+    if (!estudianteSnapshot.empty) {
+      const userDoc = estudianteSnapshot.docs[0];
+      return userDoc.data().role || null; // Devuelve el rol, o null si no existe
+    }
+
+    // Verificar en la colección "Administrador"
+    const administradoresRef = collection(db, "Administrador");
+    const administradorQuery = query(administradoresRef, where("email", "==", userEmail));
+    const administradorSnapshot = await getDocs(administradorQuery);
+
+    if (!administradorSnapshot.empty) {
+      const userDoc = administradorSnapshot.docs[0];
+      return userDoc.data().role || null; // Devuelve el rol, o null si no existe
+    }
+
+    // Si no se encuentra el usuario en ninguna colección
+    return null;
+  } catch (error) {
+    console.error("Error al obtener el rol del usuario:", error);
+    return null;
+  }
+};
+
+const phoneLookupValues = (phoneNumber: string): string[] => {
+  const normalizedPhone = phoneNumber.trim().replace(/[\s()-]/g, "");
+  const digitsOnly = normalizedPhone.replace(/\D/g, "");
+  const phoneVariants = new Set([normalizedPhone, digitsOnly]);
+
+  if (digitsOnly.startsWith("56")) {
+    phoneVariants.add(digitsOnly.slice(2));
+  }
+
+  return [...phoneVariants];
+};
+
+const findUserDocumentByPhone = async (collectionName: string, phoneNumber: string) => {
+  const phoneVariants = phoneLookupValues(phoneNumber);
+  const usersRef = collection(db, collectionName);
+
+  for (const phoneField of ["telefono", "phoneNumber"]) {
+    const phoneQuery = query(
+      usersRef,
+      where(phoneField, "in", phoneVariants)
+    );
+    const usersSnapshot = await getDocs(phoneQuery);
+
+    if (!usersSnapshot.empty) {
+      return usersSnapshot.docs[0];
+    }
+  }
+
+  return null;
+};
+
+export const getUserRoleByPhone = async (phoneNumber: string): Promise<string | null> => {
+  for (const collectionName of ["Estudiantes", "Administrador"]) {
+    const userDoc = await findUserDocumentByPhone(collectionName, phoneNumber);
+    if (userDoc) {
+      return userDoc.data().role || null;
+    }
+  }
+
+  return null;
+};
+
+export const getStudentDataByPhone = async (phoneNumber: string) => {
+  const studentDoc = await findUserDocumentByPhone("Estudiantes", phoneNumber);
+  return studentDoc
+    ? { id: studentDoc.id, data: studentDoc.data() }
+    : null;
+};
+
+type AdminProfileData = {
+  id: string;
+  telefono?: string;
+  photoUrl?: string;
+  [field: string]: unknown;
+};
+
+const createAdminProfileData = (id: string, data: Record<string, unknown>): AdminProfileData => ({
+  ...data,
+  id,
+  telefono: typeof data.telefono === "string" ? data.telefono : undefined,
+  photoUrl: typeof data.photoUrl === "string" ? data.photoUrl : undefined,
+});
+
+export const getAdminDataByPhone = async (phoneNumber: string): Promise<AdminProfileData | null> => {
+  const adminDoc = await findUserDocumentByPhone("Administrador", phoneNumber);
+  return adminDoc
+    ? createAdminProfileData(adminDoc.id, adminDoc.data())
+    : null;
+};
+
+
+// Obtener datos del usuario administrador desde Firestore
+export const getAdminData = async (userEmail: string): Promise<AdminProfileData | null> => {
+  try {
+    const administradoresRef = collection(db, "Administrador");
+    const q = query(administradoresRef, where("email", "==", userEmail));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const userDoc = querySnapshot.docs[0]; // Toma el primer documento que coincida
+      return createAdminProfileData(userDoc.id, userDoc.data());
+    } else {
+      console.error("No se encontraron datos para el administrador con el email:", userEmail);
+    }
+  } catch (error) {
+    console.error("Error al obtener datos del administrador:", error);
+  }
+  return null; // Devuelve null si no se encuentran datos
+};
+
+
+// Actualiza la foto de perfil del administrador en Firestore
+export const updateAdminProfilePhoto = async (userEmail: string, photoDataUrl: string) => {
+  try {
+    const adminRef = collection(db, "Administrador"); // Colección específica para administradores
+    const q = query(adminRef, where("email", "==", userEmail));
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const userDoc = querySnapshot.docs[0]; // Toma el primer documento que coincida
+      const userDocRef = userDoc.ref;
+
+      // Actualiza el campo 'photoUrl' en Firestore
+      await updateDoc(userDocRef, {
+        photoUrl: photoDataUrl, // Guarda la imagen en formato base64
+      });
+      console.log("Foto de perfil del administrador actualizada correctamente en Firestore.");
+    } else {
+      console.error("No se encontró el documento para este administrador.");
+    }
+  } catch (error) {
+    console.error("Error al actualizar la foto de perfil del administrador:", error);
+  }
+};
